@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer.jsx";
 import Home from "./components/Home.jsx";
@@ -12,7 +12,8 @@ import ResetPassword from "./components/reset_password";
 import TestFile from "./components/TestFile.jsx";
 import UserProfile from "./components/Userprofile/Userprofile.jsx";
 import AllBooks from "./components/AllBooks/AllBooks.jsx";
-// import Loading from "./loading.jsx";
+import "./cStyles/home.css"
+// admin panle import 
 import Header from "./components/AdminHeader.jsx";
 import Sidebar from "./components/AdminSidebar.jsx";
 import Admin from "./components/Admin.jsx";
@@ -30,8 +31,6 @@ import "./cStyles/admin.css"
 
 
 const App = () => {
-  // const [user, setLoginUser] = useState({});
-  // const navigate = useNavigate();
   const [orderPopup, setOrderPopup] = useState(false);
   const [openSidebarToggle, setOpenSidebarToggle] = useState(false);
   const user_role = window.localStorage.getItem("user-role");
@@ -40,15 +39,8 @@ const App = () => {
   const OpenSidebar = () => {
     setOpenSidebarToggle(!openSidebarToggle);
   };
-  // const [isLoggedIn, setIsLoggedIn] = useState("false");
-
-  // useEffect(() => {
-  //   if (isLoggedIn == "false") {
   const isLoggedInStatus = window.localStorage.getItem("loggedIn");
   console.log(isLoggedInStatus);
-  //     setIsLoggedIn(isLoggedInStatus);
-  //   }
-  // }, []);
 
   const handleOrderPopup = () => {
     setOrderPopup(!orderPopup);
@@ -59,13 +51,29 @@ const App = () => {
       <Navbar
         handleOrderPopup={handleOrderPopup}
       />
-      {(user_role == "admin" && admin_href) && <>
+      {(user_role == "admin" && admin_href) && <div className="grid-container">
         <Header OpenSidebar={OpenSidebar} />
         <Sidebar
           openSidebarToggle={openSidebarToggle}
           OpenSidebar={OpenSidebar}
         />
-      </>
+        <Router>
+          <Routes>
+            {/* admin routing */}
+            <Route exact path="/admin" element={<Admin />} />
+            <Route path="/admin/books" element={<Books />} />
+            <Route path="/admin/audiobooks" element={<Audiobooks />} />
+            <Route path="/admin/genre" element={<Genre />} />
+            <Route path="/admin/customer" element={<Customer />} />
+            <Route path="/admin/inventory" element={<Inventory />} />
+            <Route path="/admin/addbook" element={<Adddbook />} />
+            <Route path="/admin/addaudio" element={<Addaudiobook />} />
+            <Route path="/admin/addgenre" element={<Addgenre />} />
+            <Route path="/admin/adduser" element={<Adduser />} />
+            <Route path="/admin/addpreuser" element={<Addpremiumuser />} />
+          </Routes>
+        </Router>
+      </div>
       }
       <Router>
         <Routes>
@@ -87,9 +95,6 @@ const App = () => {
               }
             />
           }
-          {/* {isLoggedInStatus == "true" ? <Route
-            path="/login" element={<Home handleOrderPopup={handleOrderPopup} />}
-          /> : */}
           <Route
             path="/login"
             element={<Login />}
@@ -104,21 +109,6 @@ const App = () => {
           <Route path="/allbooks" element={<AllBooks />} />
           <Route path="/test" element={<TestFile />} />
           <Route path="/profile" element={<UserProfile />} />
-          {/* admin routing */}
-          {user_role == "admin" && <>
-            <Route exact path="/admin" element={<Admin />} />
-            <Route path="/admin/books" element={<Books />} />
-            <Route path="/admin/audiobooks" element={<Audiobooks />} />
-            <Route path="/admin/genre" element={<Genre />} />
-            <Route path="/admin/customer" element={<Customer />} />
-            <Route path="/admin/inventory" element={<Inventory />} />
-            <Route path="/admin/addbook" element={<Adddbook />} />
-            <Route path="/admin/addaudio" element={<Addaudiobook />} />
-            <Route path="/admin/addgenre" element={<Addgenre />} />
-            <Route path="/admin/adduser" element={<Adduser />} />
-            <Route path="/admin/addpreuser" element={<Addpremiumuser />} />
-          </>
-          }
         </Routes>
       </Router>
       <Footer />
