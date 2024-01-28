@@ -9,7 +9,7 @@ const Inventory = () => {
   return (
     <main className="main-inv">
       <div className="inven">
-        <a href="/addbook" className="inv-list">
+        <a href="/admin/addbook" className="inv-list">
           <div className="invcar">
             <div className="invcard-inner">
               <h3>Add new a Book</h3>
@@ -17,7 +17,7 @@ const Inventory = () => {
             </div>
           </div>
         </a>
-        <a href="/addaudio" className="inv-list">
+        <a href="/admin/addaudio" className="inv-list">
           <div className="invcar">
             <div className="invcard-inner">
               <h3>Add new a Audiobook</h3>
@@ -25,7 +25,7 @@ const Inventory = () => {
             </div>
           </div>
         </a>
-        <a href="/addgenre" className="inv-list">
+        <a href="/admin/addgenre" className="inv-list">
           <div className="invcar">
             <div className="invcard-inner">
               <h3>Add new Genre</h3>
@@ -33,7 +33,7 @@ const Inventory = () => {
             </div>
           </div>
         </a>
-        <a href="/adduser" className="inv-list">
+        <a href="/admin/adduser" className="inv-list">
           <div className="invcar">
             <div className="invcard-inner">
               <h3>Add new User</h3>
@@ -41,7 +41,7 @@ const Inventory = () => {
             </div>
           </div>
         </a>
-        <a href="/addpreuser" className="inv-list">
+        <a href="/admin/addpreuser" className="inv-list">
           <div className="invcar">
             <div className="invcard-inner">
               <h3>Add new Premium User</h3>
