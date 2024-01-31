@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Loading from "../loading";
 import { Document, Page } from "react-pdf";
+import { FaStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 // import "../cardCss/booksCard.css"
 
 const Books = () => {
@@ -14,9 +16,8 @@ const Books = () => {
     setNumPages(numPages);
   }
 
-  const books = "books";
   const fetchbooks = async () => {
-    const bookColl = books
+    const bookColl = "books"
 
     try {
       axios
@@ -43,39 +44,15 @@ const Books = () => {
         bookdata == undefined &&
         <Loading />
       }
-      {
-        bookdata != undefined &&
-        bookdata.map((i) => (
-          <div key={i._id}>
-            {/* <div className="">
-              {i?.bkname ?? "title"}
-            </div>
-            <div className="">
-              <img src={i?.bkimage ?? "img"} alt="img" />
-            </div>
-            <div className="pdf-div">
-              <p>
-                Page {pageNumber} of {numPages}
-              </p>
-              <Document file={"/users/bookCon/Krishna _EJ QB-1 (E-next.in).pdf"} onLoadSuccess={onDocumentLoadSuccess}>
-                {Array.apply(null, Array(numPages))
-                  .map((x, i) => i + 1)
-                  .map((page) => {
-                    return (
-                      <Page
-                        pageNumber={page}
-                        renderTextLayer={false}
-                        renderAnnotationLayer={false}
-                      />
-                    );
-                  })}
-              </Document>
-            </div> */}
+      < div className="w-auto h-auto grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 place-items-center" >
+        {
+          bookdata != undefined &&
+          bookdata.map((i) => (
             <BooksCard i={i} />
-          </div>
-        ))
-      }
-    </div>
+          ))
+        }
+      </div>
+    </div >
   );
 };
 
@@ -86,18 +63,20 @@ export default Books;
 export const BooksCard = (props) => {
   const { i } = props;
   return (
-    <div className="containerBk">
-      <div className="cardBk">
-        <h2>{i.bkname}</h2>
-        <h2>{i.authname}</h2>
-        {/* <div className="titleBk title--legendary">{i?.bkgenre}</div> */}
-        <div className="descBk">{i?.bkgenre}</div>
-        <div className="descBk">{i?.desp}</div>
-        <div className="imgBk">
-          <img className="img" src={i?.bkimage ?? "img"} alt="img" />
+    <>
+      <div className="w-auto h-[30rem] flex flex-col gap-1 shadow-xl text-black scale-90 hover:scale-95 hover:bg-primary ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
+        <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden">
+          <Link to={`/admin/books/book-detail/${i.bkname ?? "name"}`} target="_parent" className="h-full flex items-center">
+            <img
+              src={i?.bkimage ?? "img"}
+              alt=""
+              className="w-[18rem]"
+            />
+          </Link>
         </div>
+        <h1 className="w-full h-[15%] flex items-center justify-center text-3xl font-bold capitalize">{i.bkname ?? "name"}</h1>
       </div>
-    </div>
+    </>
   )
 }
 

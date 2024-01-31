@@ -28,13 +28,14 @@ import Adduser from "./components/admincompo/Adduser.jsx";
 import Addaudiobook from "./components/admincompo/Addaudiobook.jsx";
 import Addpremiumuser from "./components/admincompo/Addpremiumuser.jsx";
 import "./cStyles/admin.css"
+import BookDetail from "./components/BookDetail.jsx";
 
 
 const App = () => {
   const [orderPopup, setOrderPopup] = useState(false);
   const [openSidebarToggle, setOpenSidebarToggle] = useState(false);
   const user_role = window.localStorage.getItem("user-role");
-
+  console.log(user_role);
 
   const OpenSidebar = () => {
     setOpenSidebarToggle(!openSidebarToggle);
@@ -85,6 +86,7 @@ const App = () => {
               element={<Home handleOrderPopup={handleOrderPopup} />}
             />
           }
+          <Route path="/admin/books/book-detail/:bkname" element={<BookDetail />} />
           {isLoggedInStatus == "false" &&
             <Route
               exact
@@ -119,4 +121,4 @@ const App = () => {
 
 export default App;
 
-export const admin_href = window.location.href == "http://localhost:5173/admin" || window.location.href == "http://localhost:5173/admin/books" || window.location.href == "http://localhost:5173/admin/audiobooks" || window.location.href == "http://localhost:5173/admin/genre" || window.location.href == "http://localhost:5173/admin/customer" || window.location.href == "http://localhost:5173/admin/inventory" || window.location.href == "http://localhost:5173/admin/addbook" || window.location.href == "http://localhost:5173/admin/addaudio" || window.location.href == "http://localhost:5173/admin/addgenre" || window.location.href == "http://localhost:5173/admin/adduser" || window.location.href == "http://localhost:5173/admin/addpreuser"
+export const admin_href = window.location.href == "http://localhost:5173/admin" || window.location.href == "http://localhost:5173/admin/books" || window.location.href == "http://localhost:5173/admin/audiobooks" || window.location.href == "http://localhost:5173/admin/genre" || window.location.href == "http://localhost:5173/admin/customer" || window.location.href == "http://localhost:5173/admin/inventory" || window.location.href == "http://localhost:5173/admin/addbook" || window.location.href == "http://localhost:5173/admin/addaudio" || window.location.href == "http://localhost:5173/admin/addgenre" || window.location.href == "http://localhost:5173/admin/adduser" || window.location.href == "http://localhost:5173/admin/addpreuser" || window.location.href == "http://localhost:5173/admin/books/book-detail/:bkname"
