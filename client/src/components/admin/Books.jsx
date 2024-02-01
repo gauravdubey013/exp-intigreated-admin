@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Loading from "../loading";
+import Loading from "../../loading";
 import { Document, Page } from "react-pdf";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 
 const Books = () => {
   const [bookdata, setBookdata] = useState();
+  const [bookNo, setBookNo] = useState("");
+
   // const [bk, setBk] = useState();
   const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
@@ -36,7 +38,7 @@ const Books = () => {
       fetchbooks();
     }
   });
-  console.log(bookdata);
+  // console.log(bookdata && bookdata.length);
 
   return (
     <div className="main-book">
@@ -48,10 +50,13 @@ const Books = () => {
         {
           bookdata != undefined &&
           bookdata.map((i) => (
-            <BooksCard i={i} />
+            <div key={i?.bkname} className="">
+              <BooksCard i={i} />
+            </div>
           ))
         }
       </div>
+      <div className="w-full h-[10vh] text-4xl text-black">{bookdata && bookdata.length}</div>
     </div >
   );
 };
@@ -66,7 +71,7 @@ export const BooksCard = (props) => {
     <>
       <div className="w-auto h-[30rem] flex flex-col gap-1 shadow-xl text-black scale-90 hover:scale-95 hover:bg-primary ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
         <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden">
-          <Link to={`/admin/books/book-detail/${i.bkname ?? "name"}`} target="_parent" className="h-full flex items-center">
+          <Link to={`/admin/books/book-detail/${i?.bkname ?? "name"}`} target="_parent" className="h-full flex items-center">
             <img
               src={i?.bkimage ?? "img"}
               alt=""

@@ -191,65 +191,6 @@ app.post("/reset-password/:id/:token", async (req, res) => {
   });
 });
 
-// const uploadImg = new mongoose.Schema(
-
-//   {
-//     email: {
-//       unique: true,
-//       type: String,
-//       required: true,
-//     },
-//     imgPath: {
-//       type: String,
-//       required: true,
-//     },
-//   },
-//   { timestamps: true }
-// );
-// const UploadImg = new mongoose.model("UploadImg", uploadImg);
-
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-
-// app.post("/upload", upload.single("profileImg"), async (req, res) => {
-//   // const data = await req.formData();
-
-//   try {
-//     const email = req.body.email;
-//     const profileImg = req.file;
-
-//     let profileImgPath = "";
-
-//     const user = await UploadImg.findOne({ email: email });
-//     if (user) {
-//       return res.send({ message: "Use another email", user: user });
-//     }
-
-//     if (profileImg) {
-//       const bufferProfile = profileImg.buffer;
-//       const profileImgPathPublic = `../client/public/users/profiles/${
-//         email + "_" + profileImg.originalname
-//       }`;
-//       await writeFile(profileImgPathPublic, bufferProfile);
-//       profileImgPath = `/users/profiles/${
-//         email + "_" + profileImg.originalname
-//       }`;
-//     } else {
-//       profileImgPath = "noProfile";
-//     }
-
-//     const uploadImgData = new UploadImg({
-//       email,
-//       imgPath: profileImgPath,
-//     });
-//     await uploadImgData.save();
-
-//     res.send({ message: "Uploaded img successfully" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
 //audiobook
 const bookSchema = new mongoose.Schema(
   {
@@ -349,6 +290,132 @@ app.post(
     }
   }
 );
+
+app.post(
+  "/edit-book",
+  upload.fields([
+    { name: "bkImg", maxCount: 1 },
+    { name: "bkCon", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { bkname, authname, bkgenre, desp } = req.body;
+
+      const bkImg = req.files["bkImg"] ? req.files["bkImg"][0] : null;
+      const bkCon = req.files["bkCon"] ? req.files["bkCon"][0] : null;
+
+      const bookInfo = await Book.findOne({ bkname: bkname });
+
+      if (!bookInfo) {
+        return res.send({ message: "book doesn't exists!" });
+      }
+
+      if (authname) bookInfo.authname = authname;
+      if (bkgenre) bookInfo.bkgenre = bkgenre;
+      if (desp) bookInfo.desp = desp;
+
+      let bkImgPath = "";
+      let bkConPath = "";
+
+      if (bkImg) {
+        const bufferBkImg = bkImg.buffer;
+        const bkImgPathPublic = `../client/public/users/bookCover/${
+          bkname + "_" + bkImg.originalname
+        }`;
+        await writeFile(bkImgPathPublic, bufferBkImg);
+
+        bkImgPath = `/users/bookCover/${bkname + "_" + bkImg.originalname}`;
+        bookInfo.bkimage = bkImgPath;
+      }
+
+      if (bkCon) {
+        const bufferBkCon = bkCon.buffer;
+        const bkConPathPublic = `../client/public/users/bookCon/${
+          bkname + "_" + bkCon.originalname
+        }`;
+        await writeFile(bkConPathPublic, bufferBkCon);
+
+        bkConPath = `/users/bookCon/${bkname + "_" + bkCon.originalname}`;
+        bookInfo.bkcon = bkConPath;
+      }
+
+      await bookInfo.save();
+      // const book = new Book({
+      //   bkname,
+      //   authname,
+      //   bkimage: bkImgPath,
+      //   bkgenre,
+      //   desp,
+      //   bkcon: bkConPath,
+      // });
+      return res.send({ message: "Book edited Successfully!", status: "ok" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+);
+
+const delBookSchema = new mongoose.Schema(
+  {
+    bkname: {
+      type: String,
+      required: true,
+    },
+    authname: {
+      type: String,
+      required: true,
+    },
+    bkimage: {
+      type: String,
+      required: true,
+    },
+    bkgenre: {
+      type: String,
+      required: true,
+    },
+    desp: {
+      type: String,
+      required: true,
+    },
+    bkcon: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const DelBook = new mongoose.model("DelBook", delBookSchema);
+
+app.post("/delbook", async (req, res) => {
+  try {
+    const { bkname } = req.body;
+    // console.log(bkname);
+    const bookExist = await Book.findOne({ bkname: bkname });
+
+    if (!bookExist) {
+      return res.send({ message: "book doesn't exists!" });
+    }
+
+    const delbook = new DelBook({
+      bkname: bookExist.bkname,
+      authname: bookExist.authname,
+      bkimage: bookExist.bkimage,
+      bkgenre: bookExist.bkgenre,
+      desp: bookExist.desp,
+      bkcon: bookExist.bkcon,
+    });
+
+    await delbook.save();
+
+    await Book.deleteOne({ bkname });
+
+    return res.send({ message: "book deleted successfully !", status: "del" });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 //audiobook
 const audiobookSchema = new mongoose.Schema(
@@ -476,5 +543,64 @@ app.post("/get-dbcollections", async (req, res) => {
 });
 
 app.listen(3001, () => {
-  console.log("BE started at port 3001");
+  console.log("\nBE started at port 3001");
 });
+
+// const uploadImg = new mongoose.Schema(
+
+//   {
+//     email: {
+//       unique: true,
+//       type: String,
+//       required: true,
+//     },
+//     imgPath: {
+//       type: String,
+//       required: true,
+//     },
+//   },
+//   { timestamps: true }
+// );
+// const UploadImg = new mongoose.model("UploadImg", uploadImg);
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+// app.post("/upload", upload.single("profileImg"), async (req, res) => {
+//   // const data = await req.formData();
+
+//   try {
+//     const email = req.body.email;
+//     const profileImg = req.file;
+
+//     let profileImgPath = "";
+
+//     const user = await UploadImg.findOne({ email: email });
+//     if (user) {
+//       return res.send({ message: "Use another email", user: user });
+//     }
+
+//     if (profileImg) {
+//       const bufferProfile = profileImg.buffer;
+//       const profileImgPathPublic = `../client/public/users/profiles/${
+//         email + "_" + profileImg.originalname
+//       }`;
+//       await writeFile(profileImgPathPublic, bufferProfile);
+//       profileImgPath = `/users/profiles/${
+//         email + "_" + profileImg.originalname
+//       }`;
+//     } else {
+//       profileImgPath = "noProfile";
+//     }
+
+//     const uploadImgData = new UploadImg({
+//       email,
+//       imgPath: profileImgPath,
+//     });
+//     await uploadImgData.save();
+
+//     res.send({ message: "Uploaded img successfully" });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });

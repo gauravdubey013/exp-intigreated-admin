@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import "../App.css";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import LogoLight from "../assets/website/logo.png";
@@ -58,10 +57,9 @@ const Login = () => {
     } else {
       axios.post("http://localhost:3001/login", user).then((res) => {
         if (res.data.status === "ok") {
-          console.log(res.data.user?.role);
+          // console.log(res.data.user?.email);
           // navigate("/");
-          window.localStorage.setItem("loggedIn", true);
-          window.localStorage.setItem("user-role", res.data.user?.role);
+          window.localStorage.setItem("user", JSON.stringify(res.data.user));
           window.localStorage.setItem("token", res.data.token);
           alert(res.data.message);
           return window.location.href = "/"
@@ -73,10 +71,9 @@ const Login = () => {
     }
   };
 
-  const isLoggedIn = window.localStorage.getItem("loggedIn");
-  console.log(window.localStorage.getItem("user-role"));
+  const uData = JSON.parse(window.localStorage.getItem("user"));
 
-  if (isLoggedIn == "true") {
+  if (uData && uData?.role) {
     return window.location.href = "/";
   }
   return (

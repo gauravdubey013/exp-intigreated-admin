@@ -14,34 +14,33 @@ import UserProfile from "./components/Userprofile/Userprofile.jsx";
 import AllBooks from "./components/AllBooks/AllBooks.jsx";
 import "./cStyles/home.css"
 // admin panle import 
-import Header from "./components/AdminHeader.jsx";
-import Sidebar from "./components/AdminSidebar.jsx";
-import Admin from "./components/Admin.jsx";
-import Books from "./components/Books.jsx";
-import Audiobooks from "./components/Audiobooks.jsx";
-import Genre from "./components/Genre.jsx";
-import Customer from "./components/Customer.jsx";
-import Inventory from "./components/Inventory.jsx";
+import Header from "./components/admin/AdminHeader.jsx";
+import Sidebar from "./components/admin/AdminSidebar.jsx";
+import Admin from "./components/admin/Admin.jsx";
+import Books from "./components/admin/Books.jsx";
+import Audiobooks from "./components/admin/Audiobooks.jsx";
+import Genre from "./components/admin/Genre.jsx";
+import Customer from "./components/admin/Customer.jsx";
+import Inventory from "./components/admin/Inventory.jsx";
 import Adddbook from "./components/admincompo/Adddbook.jsx";
 import Addgenre from "./components/admincompo/Addgenre.jsx";
 import Adduser from "./components/admincompo/Adduser.jsx";
 import Addaudiobook from "./components/admincompo/Addaudiobook.jsx";
 import Addpremiumuser from "./components/admincompo/Addpremiumuser.jsx";
 import "./cStyles/admin.css"
-import BookDetail from "./components/BookDetail.jsx";
+import BookDetail from "./components/admin/BookDetail.jsx";
 
 
 const App = () => {
   const [orderPopup, setOrderPopup] = useState(false);
   const [openSidebarToggle, setOpenSidebarToggle] = useState(false);
-  const user_role = window.localStorage.getItem("user-role");
-  console.log(user_role);
+  const uData = JSON.parse(window.localStorage.getItem("user"));
+  const user_role = uData?.role;
+  // console.log(user_role);
 
   const OpenSidebar = () => {
     setOpenSidebarToggle(!openSidebarToggle);
   };
-  const isLoggedInStatus = window.localStorage.getItem("loggedIn");
-  console.log(isLoggedInStatus);
 
   const handleOrderPopup = () => {
     setOrderPopup(!orderPopup);
@@ -79,7 +78,7 @@ const App = () => {
       <Router>
         <Routes>
           {/* {isLoggedIn == false ? <Loading /> : */}
-          {isLoggedInStatus == "true" &&
+          {(uData && uData?.email) &&
             <Route
               exact
               path="/"
@@ -87,7 +86,7 @@ const App = () => {
             />
           }
           <Route path="/admin/books/book-detail/:bkname" element={<BookDetail />} />
-          {isLoggedInStatus == "false" &&
+          {uData == null &&
             <Route
               exact
               path="/"

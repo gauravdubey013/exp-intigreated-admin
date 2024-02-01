@@ -41,10 +41,9 @@ const DropdownLinks = [
 ];
 
 const Navbar = ({ handleOrderPopup }) => {
-  const isLoggedIn = window.localStorage.getItem("loggedIn");
-  const user_role = window.localStorage.getItem("user-role");
-  // const token_data = window.localStorage.getItem("token");
-
+  const uData = JSON.parse(window.localStorage.getItem("user"));
+  const user_role = uData?.role;
+  // console.log(user_role);
   return (
     <>
       <div className="shadow-md bg-white dark:bg-gray-900 dark:text-white duration-200">
@@ -106,7 +105,7 @@ const Navbar = ({ handleOrderPopup }) => {
                   </div>
                 </li>
               </ul>
-              {isLoggedIn == "true" && (
+              {(uData && uData?.email) && (
 
                 <>
 
@@ -128,8 +127,9 @@ const Navbar = ({ handleOrderPopup }) => {
                   <a
                     href={"/login"}
                     onClick={() => {
-                      window.localStorage.setItem("loggedIn", false)
-                      window.localStorage.setItem("user-role", "")
+                      window.localStorage.setItem("user", null);
+                      // window.localStorage.setItem("loggedIn", false)
+                      // window.localStorage.setItem("user-role", "")
                     }}
                     className="bg-gradient-to-r cursor-pointer from-primary to-secondary hover:scale-105 duration-200 text-white py-1 px-4 rounded-full flex items-center gap-3"
                   >
@@ -139,7 +139,7 @@ const Navbar = ({ handleOrderPopup }) => {
               )
               }
               {
-                isLoggedIn !== "true" &&
+                (uData == null) &&
                 <a
                   href={"/login"}
                   className="bg-gradient-to-r cursor-pointer from-primary to-secondary hover:scale-105 duration-200 text-white py-1 px-4 rounded-full flex items-center gap-3"
