@@ -198,6 +198,10 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+    },
     authname: {
       type: String,
       required: true,
@@ -235,7 +239,7 @@ app.post(
   ]),
   async (req, res) => {
     try {
-      const { bkname, authname, bkgenre, desp } = req.body;
+      const { bkname, role, authname, bkgenre, desp } = req.body;
 
       const bkImg = req.files["bkImg"] ? req.files["bkImg"][0] : null;
       const bkCon = req.files["bkCon"] ? req.files["bkCon"][0] : null;
@@ -275,6 +279,7 @@ app.post(
 
       const book = new Book({
         bkname,
+        role,
         authname,
         bkimage: bkImgPath,
         bkgenre,
@@ -536,6 +541,24 @@ app.post("/get-dbcollections", async (req, res) => {
     }
     // console.log(bookInfo);
     return res.send({ message: "Data found", data: bookInfo });
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/get-audiobk", async (req, res) => {
+  const { audiobooks } = await req.body;
+  console.log(audiobooks);
+  try {
+    // if (books == "books") {
+    const audiobookInfo = await Audiobook.find({}); //Book is from where is it from database (user)
+
+    if (!audiobookInfo) {
+      return res.send({ message: "No book in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: audiobookInfo }); // data used from and where
     // }
   } catch (error) {
     console.log(error);
