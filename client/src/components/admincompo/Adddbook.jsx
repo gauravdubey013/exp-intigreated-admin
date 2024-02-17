@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+
 const Adddbook = () => {
   const navigate = useNavigate();
   const [bkCon, setBkCon] = useState(null);
@@ -68,7 +69,7 @@ const Adddbook = () => {
 
       axios.post("http://localhost:3001/addbook", data).then((res) => {
         alert(res.data.message);
-        navigate("/books");
+        navigate("/admin/books");
       });
     } else {
       alert("Invlid input");
@@ -158,7 +159,7 @@ const Adddbook = () => {
                       value={book.desp}
                       id="myTextarea"
                       rows={2} // Set the number of visible rows
-                      cols={55} // Set the number of visible columns
+                      cols={47} // Set the number of visible columns
                       placeholder="Write books Description" // Placeholder text
                       onChange={handleChange}
                     ></textarea>
@@ -167,14 +168,6 @@ const Adddbook = () => {
                 <div className="inputbk">
                   <label htmlFor="bkgenre">Book Genre</label>
                   <div className="dp-flexbk">
-                    {/* <input
-                    type="text"
-                    name="bkgenre"
-                    value={book.bkgenre}
-                    required
-                    placeholder="Books Category"
-                    onChange={handleChange}
-                  ></input> */}
                     <select
                       id="dropdown"
                       value={selectedOption}

@@ -30,6 +30,8 @@ import Addpremiumuser from "./components/admincompo/Addpremiumuser.jsx";
 import "./cStyles/admin.css";
 import BookDetail from "./components/admin/BookDetail.jsx";
 import AudiobookDetail from "./components/admin/AudiobookDetail.jsx";
+import TestAddBook from "./components/TestAddBook.jsx";
+import AddBookChapters from "./components/AddBookChapters.jsx";
 
 const App = () => {
   const [orderPopup, setOrderPopup] = useState(false);
@@ -102,8 +104,10 @@ const App = () => {
           />
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/allbooks" element={<AllBooks />} />
-          <Route path="/test" element={<TestFile />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/test" element={<TestFile />} />
+          <Route path="/test-add-book" element={<TestAddBook />} />
+          <Route path="/test-chp/:bkName" element={<AddBookChapters />} />
         </Routes>
       </Router>
       <Footer />

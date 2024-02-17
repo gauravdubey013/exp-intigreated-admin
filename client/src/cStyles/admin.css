@@ -436,7 +436,7 @@ a {
   display: grid;
   grid-area: main;
   background-color: black;
-  align-items: center;
+  /* align-items: center; */
 }
 .main-gen,
 .main-u,
@@ -451,23 +451,33 @@ a {
   flex-direction: column;
   gap: 1.5rem;
 }
+.headbk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
 .headbk img {
-  display: block;
+  display: flex;
   width: 200px;
-  padding-left: 42%;
 }
 .line {
-  display: block;
+  display: flex;
   color: var(--whiteColor);
   background: hsl(17, 98%, 57%);
+  width: 100%;
   border-radius: 3px;
-  text-align: center;
+
+  justify-content: center;
   color: white;
   font-size: 25px;
 }
 .inputbk label {
   color: white;
+  font-weight: 500;
   padding-left: 3%;
+  font-size: large;
 }
 .input-flexbk {
   padding-left: 3%;
@@ -497,6 +507,15 @@ a {
   gap: 2.5rem;
   padding-bottom: 5%;
 }
+.dp-flexbk {
+  color: #252525;
+}
+.innbk {
+  display: flex;
+  gap: 6.4rem;
+  padding-right: 22.2%;
+  font-size: large;
+}
 .adbtn {
   display: flex;
   align-items: center;
@@ -513,10 +532,17 @@ a {
   transition: 0.3s ease;
 }
 /*genre*/
+.headgen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
 .headgen img {
   display: block;
   width: 200px;
-  padding-left: 42%;
+  /* padding-left: 42%; */
 }
 .img {
   display: block;
@@ -524,6 +550,8 @@ a {
   padding-left: 5%;
 }
 .gline {
+  width: 100%;
+  justify-items: center;
   gap: 50px;
   display: block;
   color: var(--whiteColor);
@@ -658,8 +686,8 @@ th {
   column-width: 100px;
   overflow-x: auto;
 }
-.innbk {
-  display: flex;
-  gap: 4.2rem;
-  padding-right: 24.2%;
+
+/* testing */
+.abc {
+  color: white;
 }

@@ -19,7 +19,7 @@ app.use(cors());
 mongoose.connect(
   //exp-proj-db in mongodb -> browser collection
   // process.env.MONGO_URL,
-  // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/session-exp?retryWrites=true&w=majority",
+  // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/new-exp?retryWrites=true&w=majority",
   "mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
@@ -396,9 +396,9 @@ const DelBook = new mongoose.model("DelBook", delBookSchema);
 app.post("/delbook", async (req, res) => {
   try {
     const { bkname } = req.body;
-    // console.log(bkname);
+    console.log(bkname);
     const bookExist = await Book.findOne({ bkname: bkname });
-
+    console.log(bookExist);
     if (!bookExist) {
       return res.send({ message: "book doesn't exists!" });
     }
@@ -565,65 +565,128 @@ app.post("/get-audiobk", async (req, res) => {
   }
 });
 
+const testbookSchema = new mongoose.Schema(
+  {
+    role: {
+      type: String,
+      required: true,
+    },
+    bkName: {
+      type: String,
+      required: true,
+    },
+    authName: {
+      type: String,
+      required: true,
+    },
+    bkGenre: {
+      type: String,
+      required: true,
+    },
+    bkDesp: {
+      type: String,
+      required: true,
+    },
+    bkImagePath: {
+      type: String,
+      required: true,
+    },
+    chapters: [
+      {
+        // id: {
+        //   type: Number,
+        //   required: false,
+        // },
+        title: {
+          type: String,
+          required: false,
+        },
+        content: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+const TBook = mongoose.model("TBook", testbookSchema);
+
+app.post(
+  "/test-addbooks",
+  upload.fields([{ name: "bkImage", maxCount: 1 }]),
+  async (req, res) => {
+    const { role, bkName, authName, bkGenre, bkDesp } = req.body;
+
+    const bkImage = req.files["bkImage"] ? req.files["bkImage"][0] : null;
+
+    const bookInfo = await TBook.findOne({
+      bkName,
+    });
+
+    if (bookInfo) {
+      return res.send({ message: "Book already there!" });
+    }
+
+    let bkImagePath = "/assets/logoExplore.png";
+
+    if (bkImage && bkImage.originalname) {
+      const bufferbkImage = bkImage.buffer;
+      const bkImagePathPublic = `../client/public/users/bookCover/${
+        bkName + "_" + bkImage.originalname
+      }`;
+      await writeFile(bkImagePathPublic, bufferbkImage);
+
+      bkImagePath = `/users/bookCover/${bkName + "_" + bkImage.originalname}`;
+    }
+    const newBook = new TBook({
+      role,
+      bkName,
+      authName,
+      bkGenre,
+      bkDesp,
+      bkImagePath,
+      // chapters: [],
+    });
+
+    await newBook.save();
+    return res.send({ message: "Added Book Successfully!", status: "ok" });
+  }
+);
+// app.post("/text-addbookchp", async (req, res) => {
+app.post("/text-addbookchp", async (req, res) => {
+  const { bkName, title, content } = await req.body;
+  console.log(req.body);
+  // console.log(bkName, title, content);
+  try {
+    const bookInfo = await TBook.findOne({ bkName });
+
+    if (!bookInfo) {
+      return res.send({ message: "Book not found" });
+    }
+
+    // let id;
+    // if (bookInfo.chapters.length > 0) {
+    //   // Find the maximum id among existing chapters and increment it
+    //   id = Math.max(...bookInfo.chapters.map((chapter) => chapter.id)) + 1;
+    // } else {
+    //   id = 1;
+    // }
+
+    // const newChapter = { id, title, content };
+    const newChapter = { title, content };
+    bookInfo.chapters.push(newChapter);
+
+    await bookInfo.save();
+
+    return res.send({ message: "Chapter added successfully!", status: "ok" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
 app.listen(3001, () => {
   console.log("\nBE started at port 3001");
 });
-
-// const uploadImg = new mongoose.Schema(
-
-//   {
-//     email: {
-//       unique: true,
-//       type: String,
-//       required: true,
-//     },
-//     imgPath: {
-//       type: String,
-//       required: true,
-//     },
-//   },
-//   { timestamps: true }
-// );
-// const UploadImg = new mongoose.model("UploadImg", uploadImg);
-
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-
-// app.post("/upload", upload.single("profileImg"), async (req, res) => {
-//   // const data = await req.formData();
-
-//   try {
-//     const email = req.body.email;
-//     const profileImg = req.file;
-
-//     let profileImgPath = "";
-
-//     const user = await UploadImg.findOne({ email: email });
-//     if (user) {
-//       return res.send({ message: "Use another email", user: user });
-//     }
-
-//     if (profileImg) {
-//       const bufferProfile = profileImg.buffer;
-//       const profileImgPathPublic = `../client/public/users/profiles/${
-//         email + "_" + profileImg.originalname
-//       }`;
-//       await writeFile(profileImgPathPublic, bufferProfile);
-//       profileImgPath = `/users/profiles/${
-//         email + "_" + profileImg.originalname
-//       }`;
-//     } else {
-//       profileImgPath = "noProfile";
-//     }
-
-//     const uploadImgData = new UploadImg({
-//       email,
-//       imgPath: profileImgPath,
-//     });
-//     await uploadImgData.save();
-
-//     res.send({ message: "Uploaded img successfully" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });

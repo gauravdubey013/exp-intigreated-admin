@@ -13,7 +13,6 @@ const Books = () => {
   const [editOpen, setEditOpen] = useState(false);
   const [bkDetail, setBkDetail] = useState();
 
-
   const fetchbooks = async () => {
     const bookColl = "books";
     try {
@@ -47,19 +46,101 @@ const Books = () => {
 
   const delbook = (bk) => {
     console.log(bk?.bkname);
-    // axios
-    //   .post("http://localhost:3001/delbook", { bkname: bkDetail?.bkname })
-    //   .then((res) => {
-    //     alert(res.data.message);
-    //     if (res.data.status == "del") {
-    //       return (window.location.href = "/admin/books");
-    //     }
-    //   });
+    axios
+      .post("http://localhost:3001/delbook", { bkname: bk?.bkname })
+      .then((res) => {
+        alert(res.data.message);
+        if (res.data.status == "del") {
+          return (window.location.href = "/admin/books");
+        }
+      });
   };
 
+  // return (
+  //   <div className="main-book relative overflow-hidden flex flex-col">
+  //     <div className="bcards">
+  //       <div className="bkcard h-auto">
+  //         <h2>BOOKS UPLOADED BY ADMIN</h2>
+  //         <h3>{adminCount}</h3>
+  //       </div>
+  //       <div className="bkcard">
+  //         <h2>BOOKS UPLOADED BY USER</h2>
+  //         <h3>{userCount}</h3>
+  //       </div>
+  //     </div>
+  //     <h1 className="tbhead text-3xl -mb-10 "> Book Table</h1>
+  //     <div className=" scrollDi h-full">
+  //       <div className="table ">
+  //         <table>
+  //           <thead>
+  //             <tr>
+  //               <th>Title</th>
+  //               <th>Author</th>
+  //               <th>Genre</th>
+  //               <th>By</th>
+  //               <th>Book Cover</th>
+  //               <th>Book Description</th>
+  //               <th>Book Content</th>
+  //               <th>Manage</th>
+  //             </tr>
+  //           </thead>
+  //           <tbody>
+  //             {bookdata == undefined && <span>undefined</span>}
+  //             {bookdata != undefined &&
+  //               //  do both the line above will work
+  //               bookdata.map((i) => (
+  //                 <tr key={i._id}>
+  //                   {/* <BooksCard i={i} /> */}
+  //                   {/* what i is doing?? */}
+  //                   <td>{i.bkname}</td>
+  //                   <td>{i.authname}</td>
+  //                   <td>{i.bkgenre}</td>
+  //                   <td>{i.role}</td>
+  //                   <td className="tbimg">{i.bkimage}</td>
+  //                   <td className="tbdesp">{i.desp}</td>
+  //                   <td className="tbcon">{i.bkcon}</td>
+  //                   <td>
+  //                     <div className="absolute w-full h-auto p-8 flex flex-col justify-center gap-5  text-white">
+  //                       <FaRegEdit
+  //                         size={30}
+  //                         onClick={() => {
+  //                           setBkDetail(i);
+  //                           setEditOpen(!editOpen);
+  //                         }}
+  //                         className="active:scale-90 cursor-pointer ease-in-out duration-200"
+  //                       />
+  //                       <AiTwotoneDelete
+  //                         size={30}
+  //                         onClick={() => {
+  //                           // setBkDetail(i);
+  //                           delbook(i);
+  //                         }}
+  //                         className="active:scale-90 cursor-pointer ease-in-out duration-200"
+  //                       />
+  //                     </div>
+  //                   </td>
+  //                 </tr>
+  //               ))}
+  //           </tbody>
+  //         </table>
+  //       </div>
+  //     </div>
+  //     <div
+  //       className={`${
+  //         editOpen ? "opacity-100" : "opacity-0 hidden"
+  //       } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+  //     >
+  //       <BookDetail
+  //         setEditOpen={setEditOpen}
+  //         bookDetail={bkDetail}
+  //         fetchbooks={fetchbooks}
+  //       />
+  //     </div>
+  //   </div>
+  // );
   return (
     <div className="main-book relative overflow-hidden flex flex-col">
-      <div className="bcards">
+      <div className="bcards h-auto">
         <div className="bkcard">
           <h2>BOOKS UPLOADED BY ADMIN</h2>
           <h3>{adminCount}</h3>
@@ -69,68 +150,76 @@ const Books = () => {
           <h3>{userCount}</h3>
         </div>
       </div>
-      <div className="table">
-        <h1 className="tbhead text-3xl"> Book Table</h1>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Author</th>
-              <th>Genre</th>
-              <th>By</th>
-              <th>Book Cover</th>
-              <th>Book Description</th>
-              <th>Book Content</th>
-              <th>Manage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookdata == undefined && <span>undefined</span>}
-            {bookdata != undefined &&
-              //  do both the line above will work
-              bookdata.map((i) => (
-                <tr key={i._id}>
-                  {/* <BooksCard i={i} /> */}
-                  {/* what i is doing?? */}
-                  <td>{i.bkname}</td>
-                  <td>{i.authname}</td>
-                  <td>{i.bkgenre}</td>
-                  <td>{i.role}</td>
-                  <td className="tbimg">{i.bkimage}</td>
-                  <td className="tbdesp">{i.desp}</td>
-                  <td className="tbcon">{i.bkcon}</td>
-                  <td>
-                    <div className="absolute w-full h-auto p-8 flex flex-col justify-center gap-5  text-white">
-                      <FaRegEdit
-                        size={30}
-                        onClick={() => {
-                          setBkDetail(i)
-                          setEditOpen(!editOpen)
-                        }}
-                        className="active:scale-90 cursor-pointer ease-in-out duration-200"
-                      />
-                      <AiTwotoneDelete
-                        size={30}
-                        onClick={() => {
-                          // setBkDetail(i);
-                          delbook(i)
-                        }}
-                        className="active:scale-90 cursor-pointer ease-in-out duration-200"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+      <h1 className="tbhead text-3xl -mb-10">Book Table</h1>
+      <div className="scrollDi">
+        <div className="table">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>By</th>
+                <th>Book Cover</th>
+                <th>Book Description</th>
+                <th>Book Content</th>
+                <th>Manage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookdata == undefined && <span>undefined</span>}
+              {bookdata != undefined &&
+                //  do both the line above will work
+                bookdata.map((i) => (
+                  <tr key={i._id}>
+                    {/* <BooksCard i={i} /> */}
+                    {/* what i is doing?? */}
+                    <td>{i.bkname}</td>
+                    <td>{i.authname}</td>
+                    <td>{i.bkgenre}</td>
+                    <td>{i.role}</td>
+                    <td className="tbimg">{i.bkimage}</td>
+                    <td className="tbdesp">{i.desp}</td>
+                    <td className="tbcon">{i.bkcon}</td>
+                    <td>
+                      <div className=" w-full h-auto p-8 flex flex-col justify-center gap-5 text-white">
+                        <FaRegEdit
+                          size={30}
+                          onClick={() => {
+                            setBkDetail(i);
+                            setEditOpen(!editOpen);
+                          }}
+                          className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                        />
+                        <AiTwotoneDelete
+                          size={30}
+                          onClick={() => {
+                            // setBkDetail(i);
+                            delbook(i);
+                          }}
+                          className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div
-        className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
-          } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+        className={`${
+          editOpen ? "opacity-100" : "opacity-0 hidden"
+        } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
       >
-        <BookDetail setEditOpen={setEditOpen} bookDetail={bkDetail} fetchbooks={fetchbooks} />
+        <BookDetail
+          setEditOpen={setEditOpen}
+          bookDetail={bkDetail}
+          fetchbooks={fetchbooks}
+        />
       </div>
-    </div >
+          
+    </div>
   );
 };
 
@@ -144,6 +233,26 @@ export const BookDetail = (props) => {
     bkgenre: "",
     desp: "",
   });
+  //dropdown list
+  const options = [
+    "Adventure",
+    "Children's literature",
+    "Fiction",
+    "Historical Fiction",
+    "Horror",
+    "Humor",
+    "Mythology",
+    " Nonfiction",
+    "Poetry",
+    "Paranormal",
+    "Romance",
+    "Self Help",
+    "Thriller",
+  ];
+  const [selectedOption, setSelectedOption] = useState("");
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
   const [bkCon, setBkCon] = useState(null);
   const [bkImg, setBkImg] = useState(null);
 
@@ -161,7 +270,7 @@ export const BookDetail = (props) => {
     data.set("bkname", bookDetail?.bkname);
     data.set("authname", bookDetail?.authname);
     data.set("bkImg", bkImg);
-    data.set("bkgenre", book.bkgenre);
+    data.set("bkgenre", selectedOption);
     data.set("desp", book.desp);
     data.set("bkCon", bkCon);
 
@@ -182,10 +291,13 @@ export const BookDetail = (props) => {
   return (
     <>
       <form className="relative w-[50%] h-[40rem] shadow-2xl rounded-xl flex flex-col gap-2 items-center justify-center border">
-        <div onClick={() => setEditOpen(false)} className="absolute cursor-pointer w-auto h-auto text-2xl right-2 top-2 active:scale-90 ease-in-out duration-200">X</div>
-        <span className="text-4xl mb-2">
-          Edit book details
-        </span>
+        <div
+          onClick={() => setEditOpen(false)}
+          className="absolute cursor-pointer w-auto h-auto text-2xl right-2 top-2 active:scale-90 ease-in-out duration-200"
+        >
+          X
+        </div>
+        <span className="text-4xl mb-2">Edit book details</span>
         <input
           type="text"
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg placeholder:text-black text-black p-2"
@@ -198,14 +310,31 @@ export const BookDetail = (props) => {
           disabled
           placeholder={bookDetail?.authname ?? "book-author"}
         />
-        <input
+        {/* <input
           type="text"
           name="bkgenre"
           value={book.bkgenre}
           onChange={handleChange}
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
           placeholder={bookDetail?.bkgenre ?? "book-genre"}
-        />
+        /> */}
+
+        <select
+          id="dropdown"
+          value={selectedOption}
+          onChange={handleSelectChange}
+          className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
+        >
+          <option value="" disabled>
+            {bookDetail?.bkgenre ?? "book-genre"}
+          </option>
+          {options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+
         <textarea
           rows={5}
           name="desp"
@@ -247,5 +376,5 @@ export const BookDetail = (props) => {
         </button>
       </form>
     </>
-  )
-}
+  );
+};
