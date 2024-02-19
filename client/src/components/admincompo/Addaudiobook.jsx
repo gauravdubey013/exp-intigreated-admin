@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import "../../cStyles/admin.css";
 
 const Addaudiobook = () => {
   const navigate = useNavigate();
@@ -23,17 +24,17 @@ const Addaudiobook = () => {
     "Horror",
     "Humor",
     "Mythology",
-    " Nonfiction",
+    "Nonfiction",
     "Poetry",
     "Paranormal",
     "Romance",
     "Self Help",
     "Thriller",
   ];
-  const [selectedOption, setSelectedOption] = useState("");
-  const handleSelectChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
+  // const [selectedOption, setSelectedOption] = useState("");
+  // const handleSelectChange = (event) => {
+  //   setSelectedOption(event.target.value);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +44,7 @@ const Addaudiobook = () => {
     });
   };
 
-  // console.log(book);
+  // console.log(audiobook, audioBkCon, audioBkImage);
 
   const addaudiobook = (e) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ const Addaudiobook = () => {
       audiobook.audioAuthName &&
       audiobook.role &&
       // audioBkImage &&
-      // audiobook.audioBkGenre &&
+      audiobook.audioBkGenre &&
       audiobook.audioDesp
       // bkCon
     ) {
@@ -69,7 +70,7 @@ const Addaudiobook = () => {
 
       axios.post("http://localhost:3001/addaudiobook", data).then((res) => {
         alert(res.data.message);
-        navigate("/audiobooks");
+        navigate("/admin/audiobooks");
       });
     } else {
       alert("Invalid input");
@@ -181,8 +182,9 @@ const Addaudiobook = () => {
                   <div className="dp-flexbk">
                     <select
                       id="dropdown"
-                      value={selectedOption}
-                      onChange={handleSelectChange}
+                      name="audioBkGenre"
+                      value={audiobook.audioBkGenre}
+                      onChange={handleChange}
                     >
                       <option value="" disabled>
                         Select an option

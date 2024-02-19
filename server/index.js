@@ -3,24 +3,31 @@ import cors from "cors";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-
 import multer from "multer";
-import { promisify } from "util";
 import { writeFile } from "fs/promises";
-
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+
 dotenv.config();
+
+// Adjust __dirname for ES Module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 mongoose.connect(
   //exp-proj-db in mongodb -> browser collection
   // process.env.MONGO_URL,
-  // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/new-exp?retryWrites=true&w=majority",
+  // "mongodb+srv://exp:exp123@clusterexp.xw5sehz.mongodb.net/session-exp?retryWrites=true&w=majority",
   "mongodb+srv://exp:explore@explorecluster.yweprwi.mongodb.net/expdb?retryWrites=true&w=majority",
+  // "mongodb+srv://exp:<password>@cluster0.wpeuved.mongodb.net/?retryWrites=true&w=majority",
+  //  "mongodb+srv://exp:exp@cluster0.wpeuved.mongodb.net/session-exp?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -35,6 +42,10 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+    },
+    profileimage: {
+      type: String,
+      required: false,
     },
     role: {
       type: String,
@@ -170,20 +181,39 @@ app.post("/forgortpassword", async (req, res) => {
 
 app.post("/reset-password/:id/:token", async (req, res) => {
   const { id, token } = req.params;
-  const { password } = req.body;
+  const { password, resetAction } = req.body;
 
+  console.log(id, token, password, resetAction);
+
+  const user_exists = await User.findOne({ _id: id });
+  if (!user_exists) {
+    return res.send({ message: "Invalid User doesn't exists" });
+  }
+
+  if (resetAction == "setNewPswd") {
+    const oldPswd = token;
+    if (oldPswd == user_exists.password) {
+      user_exists.password = password;
+      await user_exists.save();
+
+      return res.send({ message: "Password Reset successful!", status: "ok" });
+    } else {
+      return res.send({ message: "Old Password is worng or invalid" });
+    }
+  }
   jwt.verify(token, "jwt_secret_key", async (err, decoded) => {
     if (err) {
       return res.status(401).send({ message: "Invalid token" });
     }
     try {
-      const user_exists = await User.findOne({ _id: id });
       if (!user_exists) {
         return res.send({ message: "Invalid token or ID" });
       }
+
       user_exists.password = password;
 
       await user_exists.save();
+
       res.send({ message: "Password Reset done", status: "ok" });
     } catch (error) {
       return res.send({ error: error });
@@ -318,6 +348,8 @@ app.post(
       if (authname) bookInfo.authname = authname;
       if (bkgenre) bookInfo.bkgenre = bkgenre;
       if (desp) bookInfo.desp = desp;
+      if (desp) bookInfo.desp = desp;
+      // if (bkname) bookInfo.bkname = bkname;
 
       let bkImgPath = "";
       let bkConPath = "";
@@ -396,9 +428,9 @@ const DelBook = new mongoose.model("DelBook", delBookSchema);
 app.post("/delbook", async (req, res) => {
   try {
     const { bkname } = req.body;
-    console.log(bkname);
+    // console.log(bkname);
     const bookExist = await Book.findOne({ bkname: bkname });
-    console.log(bookExist);
+
     if (!bookExist) {
       return res.send({ message: "book doesn't exists!" });
     }
@@ -433,6 +465,10 @@ const audiobookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+    },
     audioBkImage: {
       type: String,
       required: true,
@@ -463,7 +499,8 @@ app.post(
   ]),
   async (req, res) => {
     try {
-      const { audioBkName, audioAuthName, audioBkGenre, audioDesp } = req.body;
+      const { audioBkName, audioAuthName, audioBkGenre, audioDesp, role } =
+        req.body;
 
       const audioBkImage = req.files["audioBkImage"]
         ? req.files["audioBkImage"][0]
@@ -482,8 +519,9 @@ app.post(
 
       let audioBkImagePath = "";
       let audioBkConPath = "";
+      // console.log(audioBkImage, audioBkCon);
 
-      if (audioBkImage) {
+      if (audioBkImage && audioBkImage.originalname) {
         const bufferaudioBkImage = audioBkImage.buffer;
         const audioBkImagePathPublic = `../client/public/users/audioBookCover/${
           audioBkName + "_" + audioBkImage.originalname
@@ -496,8 +534,8 @@ app.post(
       } else {
         audioBkImagePath = "/assets/logoExplore.png";
       }
-
-      if (audioBkCon) {
+      // why is audioBkCon.originalname used ??
+      if (audioBkCon && audioBkCon.originalname) {
         const bufferaudioBkCon = audioBkCon.buffer;
         const audioBkConPathPublic = `../client/public/users/audioBookCon/${
           audioBkName + "_" + audioBkCon.originalname
@@ -512,8 +550,9 @@ app.post(
       }
 
       const audiobook = new Audiobook({
-        audioBkName: audioBkName,
+        audioBkName,
         audioAuthName,
+        role,
         audioBkImage: audioBkImagePath,
         audioBkGenre,
         audioDesp,
@@ -521,32 +560,13 @@ app.post(
       });
 
       audiobook.save();
-      return res.send({ message: "Book add Successfully!" });
+      return res.send({ message: "Audio Book add Successfully!" });
     } catch (error) {
       console.log(error);
       res.status(500).send({ error: "Internal Server Error" });
     }
   }
 );
-
-app.post("/get-dbcollections", async (req, res) => {
-  const { books } = await req.body;
-  console.log(books);
-  try {
-    // if (books == "books") {
-    const bookInfo = await Book.find({});
-
-    if (!bookInfo) {
-      return res.send({ message: "No book in DB!" });
-    }
-    // console.log(bookInfo);
-    return res.send({ message: "Data found", data: bookInfo });
-    // }
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 app.post("/get-audiobk", async (req, res) => {
   const { audiobooks } = await req.body;
   console.log(audiobooks);
@@ -565,6 +585,272 @@ app.post("/get-audiobk", async (req, res) => {
   }
 });
 
+app.post("/get-dbcollections", async (req, res) => {
+  const { books } = await req.body;
+  console.log(books);
+  try {
+    // if (books == "books") {
+    const bookInfo = await TBook.find({});
+
+    if (!bookInfo) {
+      return res.send({ message: "No book in DB!" });
+    }
+    // console.log(bookInfo);
+    return res.send({ message: "Data found", data: bookInfo });
+    // }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//edit-audiobooks
+app.post(
+  "/edit-audiobook",
+  upload.fields([
+    { name: "audioBkImage", maxCount: 1 },
+    { name: "audioBkCon", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { audioBkName, audioAuthName, audioBkGenre, audioDesp } = req.body;
+
+      const audioBkImage = req.files["audioBkImage"]
+        ? req.files["audioBkImage"][0]
+        : null;
+      const audioBkCon = req.files["audioBkCon"]
+        ? req.files["audioBkCon"][0]
+        : null;
+
+      const audiobookInfo = await Audiobook.findOne({
+        audioBkName: audioBkName,
+      });
+
+      if (!audiobookInfo) {
+        return res.send({ message: "book doesn't exists!" });
+      }
+
+      // console.log(
+      //   audioBkName,
+      //   audioAuthName,
+      //   audioBkGenre,
+      //   audioDesp,
+      //   audioBkImage,
+      //   audioBkCon
+      // );
+
+      if (audioAuthName) audiobookInfo.audioAuthName = audioAuthName;
+      if (audioBkGenre) audiobookInfo.audioBkGenre = audioBkGenre;
+      if (audioDesp) audiobookInfo.audioDesp = audioDesp;
+
+      let audioBkImagePath = "";
+      let audioBkConPath = "";
+
+      if (audioBkImage && audioBkImage.originalname) {
+        const bufferaudioBkImage = audioBkImage.buffer;
+        const audioBkImagePathPublic = `../client/public/users/audioBookCover/${
+          audioBkName + "_" + audioBkImage.originalname
+        }`; //why is ` used??
+        await writeFile(audioBkImagePathPublic, bufferaudioBkImage);
+
+        audioBkImagePath = `/users/audioBookCover/${
+          audioBkName + "_" + audioBkImage.originalname
+        }`;
+        audiobookInfo.audioBkImage = audioBkImagePath;
+      }
+
+      if (audioBkCon && audioBkCon.originalname) {
+        const bufferaudioBkCon = audioBkCon.buffer;
+        const audioBkConPathPublic = `../client/public/users/audioBookCon/${
+          audioBkName + "_" + audioBkCon.originalname
+        }`;
+        await writeFile(audioBkConPathPublic, bufferaudioBkCon);
+
+        audioBkConPath = `/users/audioBookCon/${
+          audioBkName + "_" + audioBkCon.originalname
+        }`;
+        audiobookInfo.audioBkCon = audioBkConPath;
+      }
+
+      await audiobookInfo.save();
+
+      return res.send({
+        message: "Audiobook edited Successfully!",
+        status: "ok",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+);
+
+//delete Audiobook
+const delAudiobookSchema = new mongoose.Schema(
+  {
+    audioBkName: {
+      type: String,
+      required: true,
+    },
+    audioAuthName: {
+      type: String,
+      required: true,
+    },
+    audioBkImage: {
+      type: String,
+      required: true,
+    },
+    audioBkGenre: {
+      type: String,
+      required: true,
+    },
+    audioDesp: {
+      type: String,
+      required: true,
+    },
+    audioBkCon: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const DelAudiobook = new mongoose.model("DelAudiobook", delAudiobookSchema);
+
+app.post("/delaudiobook", async (req, res) => {
+  try {
+    const { audioBkName } = req.body;
+    console.log(audioBkName);
+    const audiobookExist = await Audiobook.findOne({
+      audioBkName: audioBkName,
+    });
+    console.log(audiobookExist);
+    if (!audiobookExist) {
+      return res.send({ message: "book doesn't exists!" });
+    }
+
+    const delaudiobook = new DelAudiobook({
+      audioBkName: audiobookExist.audioBkName,
+      audioAuthName: audiobookExist.audioAuthName,
+      audioBkImage: audiobookExist.audioBkImage,
+      audioBkGenre: audiobookExist.audioBkGenre,
+      audioDesp: audiobookExist.audioDesp,
+      audioBkCon: audiobookExist.audioBkCon,
+    });
+
+    await delaudiobook.save();
+
+    await Audiobook.deleteOne({ audioBkName });
+
+    return res.send({ message: "book deleted successfully !", status: "del" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/get-user", async (req, res) => {
+  const { username } = req.body;
+  // console.log(username);
+  try {
+    const userInfo = await User.findOne({ username });
+
+    if (!userInfo) {
+      return res.send({ message: "User doesn't exist!", status: 400 });
+    }
+    return res.send({ message: "User data found", user: userInfo });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post(
+  "/upload-user-pfp",
+  upload.fields([{ name: "profileimage", maxCount: 1 }]),
+  async (req, res) => {
+    try {
+      const { username } = req.body;
+      const profileimage = req.files["profileimage"]
+        ? req.files["profileimage"][0]
+        : null;
+
+      const userExist = await User.findOne({ username });
+      if (!userExist) {
+        return res.send({ message: "User doesn't exist!" });
+      }
+
+      if (profileimage && profileimage.originalname) {
+        const bufferPfp = profileimage.buffer;
+        // Dynamically construct the file path
+        const pfpPathPublic = path.join(
+          __dirname,
+          "..",
+          "client",
+          "public",
+          "users",
+          "profileImages",
+          `${username}_${profileimage.originalname}`
+        );
+
+        await writeFile(pfpPathPublic, bufferPfp).catch((error) => {
+          console.error("Error saving file:", error);
+          throw new Error("Failed to save profile photo");
+        });
+
+        // Construct the path for accessing the image via URL
+        const pfpPath = `/users/profileImages/${username}_${profileimage.originalname}`;
+
+        // Update the user's profile image path in the database
+        userExist.profileimage = pfpPath;
+        await userExist.save();
+
+        return res.send({ message: "Profile photo updated successfully" });
+      } else {
+        return res.status(400).send({ message: "No profile image provided" });
+      }
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .send({ error: "Internal Server Error", details: error.message });
+    }
+  }
+);
+
+//change user password
+app.post("changing-password", async (req, res) => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if the old password matches the user's current password
+    const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: "Old password is incorrect" });
+    }
+
+    // Update the user's password with the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash the new password
+    user.password = hashedPassword;
+
+    // Save the updated user object to the database
+    await user.save();
+
+    // Alert the user when password is successfully changed
+    return res.json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//test book
 const testbookSchema = new mongoose.Schema(
   {
     role: {
@@ -666,15 +952,6 @@ app.post("/text-addbookchp", async (req, res) => {
       return res.send({ message: "Book not found" });
     }
 
-    // let id;
-    // if (bookInfo.chapters.length > 0) {
-    //   // Find the maximum id among existing chapters and increment it
-    //   id = Math.max(...bookInfo.chapters.map((chapter) => chapter.id)) + 1;
-    // } else {
-    //   id = 1;
-    // }
-
-    // const newChapter = { id, title, content };
     const newChapter = { title, content };
     bookInfo.chapters.push(newChapter);
 

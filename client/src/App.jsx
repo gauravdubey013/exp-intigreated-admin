@@ -10,10 +10,9 @@ import Register from "./components/register";
 import ForgotPassword from "./components/forgortpassword";
 import ResetPassword from "./components/reset_password";
 import TestFile from "./components/TestFile.jsx";
-import UserProfile from "./components/Userprofile/Userprofile.jsx";
 import AllBooks from "./components/AllBooks/AllBooks.jsx";
 import "./cStyles/home.css";
-// admin panle import
+// admin panel import
 import Header from "./components/admin/AdminHeader.jsx";
 import Sidebar from "./components/admin/AdminSidebar.jsx";
 import Admin from "./components/admin/Admin.jsx";
@@ -30,8 +29,22 @@ import Addpremiumuser from "./components/admincompo/Addpremiumuser.jsx";
 import "./cStyles/admin.css";
 import BookDetail from "./components/admin/BookDetail.jsx";
 import AudiobookDetail from "./components/admin/AudiobookDetail.jsx";
+import AudiobookSlider from "./components/AudiobookSlider.jsx";
 import TestAddBook from "./components/TestAddBook.jsx";
 import AddBookChapters from "./components/AddBookChapters.jsx";
+//User imports
+import UserProfile from "./User/UserProfile.jsx";
+import AccountSettings from "./components/UserProfile/AccountSettings.jsx";
+import SingleBanner from "./components/Banners/SingleBanner.jsx";
+import UserSidebar from "./components/UserProfile/UserSidebar.jsx";
+import YourBooks from "./components/UserProfile/YourBooks.jsx";
+import ChangePassword from "./components/UserProfile/ChangePassword.jsx";
+import Premium from "./components/UserProfile/Premium.jsx";
+import LegalNotice from "./components/UserProfile/LegalNotice.jsx";
+import SuccessPage from "./components/UserProfile/SuccessPage";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const App = () => {
   const [orderPopup, setOrderPopup] = useState(false);
@@ -74,6 +87,27 @@ const App = () => {
               <Route path="/admin/addpreuser" element={<Addpremiumuser />} />
             </Routes>
           </Router>
+          <Router>
+            <Routes>
+              {/* User Routing */}
+              <Route
+                exact
+                path="/accountsettings"
+                element={<AccountSettings />}
+              />
+              <Route exact path="/singlebanner" element={<SingleBanner />} />
+              <Route exact path="/yourbooks" element={<YourBooks />} />
+              <Route exact path="/premium" element={<Premium />} />
+              <Route exact path="/legalnotice" element={<LegalNotice />} />
+              <Route
+                exact
+                path="/changepassword"
+                element={<ChangePassword />}
+              />
+              <Route exact path="/usersidebar" element={<UserSidebar />} />
+              <Route path="/success" element={<SuccessPage />} />
+            </Routes>
+          </Router>
         </div>
       )}
       <Router>
@@ -104,8 +138,11 @@ const App = () => {
           />
           <Route path="/userprofile" element={<UserProfile />} />
           <Route path="/allbooks" element={<AllBooks />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/audiobookslider" element={<AudiobookSlider />} />
           <Route path="/test" element={<TestFile />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/user/:username/:activepage" element={<UserProfile />} />
+          <Route path="/success" element={<SuccessPage />} />
           <Route path="/test-add-book" element={<TestAddBook />} />
           <Route path="/test-chp/:bkName" element={<AddBookChapters />} />
         </Routes>
@@ -131,6 +168,6 @@ export const admin_href =
   window.location.href == "http://localhost:5173/admin/adduser" ||
   window.location.href == "http://localhost:5173/admin/addpreuser" ||
   window.location.href ==
-  "http://localhost:5173/admin/books/book-detail/:bkname" ||
+    "http://localhost:5173/admin/books/book-detail/:bkname" ||
   window.location.href ==
-  "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
+    "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";

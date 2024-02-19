@@ -29,16 +29,23 @@ const AllBooks = () => {
     const bookColl = "books";
 
     try {
-      const res = await axios.post("http://localhost:3001/get-dbcollections", bookColl);
+      const res = await axios.post(
+        "http://localhost:3001/get-dbcollections",
+        bookColl
+      );
       const databook = res.data.data;
 
       let filteredBooks = databook;
 
       if (selectedOption !== "All") {
-        filteredBooks = databook.filter(book => book.bkgenre === selectedOption);
+        filteredBooks = databook.filter(
+          (book) => book.bkgenre === selectedOption
+        );
       }
       if (bknameInput !== "") {
-        filteredBooks = filteredBooks.filter(book => book.bkname === bknameInput);
+        filteredBooks = filteredBooks.filter(
+          (book) => book.bkname === bknameInput
+        );
       }
       setBookdata(filteredBooks);
     } catch (error) {
@@ -79,7 +86,7 @@ const AllBooks = () => {
             </div>
           </div>
         </form>
-      </div >
+      </div>
       {bookdata.length === 0 && <Loading />}
       <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 place-items-center gap-5 ">
         {bookdata.map((i) => (
@@ -88,7 +95,7 @@ const AllBooks = () => {
           </div>
         ))}
       </div>
-    </div >
+    </div>
   );
 };
 

@@ -5,6 +5,8 @@ import Hero from "./Hero/Hero.jsx";
 import Services from "./Services/Services.jsx";
 import Banner from "./Banner/Banner.jsx";
 import Books from "./BooksSlider/Books.jsx";
+import AudiobookSlider from "./AudiobookSlider.jsx";
+
 // import UserProfile from "./Userprofile/Userprofile.jsx"
 // import AllBooks from "./AllBooks/AllBooks.jsx";
 
@@ -30,6 +32,7 @@ const Home = ({ handleOrderPopup }) => {
         {/* <CoverBanner /> */}
         {/* <PdfReader /> */}
         <Books />
+        <AudiobookSlider />
         {/* <UserProfile/> */}
         {/* <AllBooks /> */}
       </div>

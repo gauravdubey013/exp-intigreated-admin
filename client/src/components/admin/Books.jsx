@@ -6,7 +6,6 @@ import { FaRegEdit } from "react-icons/fa";
 //import Loading from "../loading";
 
 const Books = () => {
-  // const [bookDetail, setBookDetail] = useState();
   const [bookdata, setBookdata] = useState();
   const [bkByAdmin, setBkByAdmin] = useState([]);
   const [bkByUser, setBkByUser] = useState([]);
@@ -22,6 +21,7 @@ const Books = () => {
           const databook = res.data.data; //data.data??
           // alert(res.data.message);
           setBookdata(databook);
+          // console.log(bookdata);
           setBkByAdmin(databook.length);
           setBkByAdmin(databook.filter((book) => book.role === "admin"));
           setBkByUser(databook.filter((book) => book.role === "user"));
@@ -38,11 +38,6 @@ const Books = () => {
   }, []);
   const adminCount = bkByAdmin.length;
   const userCount = bkByUser.length;
-  // console.log(bookdata);
-  // console.log(bkByAdmin && bkByAdmin.length);
-  // console.log(bkByUser.length);
-  // console.log(bkByUser && bkByUser.length);
-  // console.log(adminCount);
 
   const delbook = (bk) => {
     console.log(bk?.bkname);
@@ -51,93 +46,12 @@ const Books = () => {
       .then((res) => {
         alert(res.data.message);
         if (res.data.status == "del") {
-          return (window.location.href = "/admin/books");
+          fetchbooks();
+          // return (window.location.href = "/admin/books");
         }
       });
   };
 
-  // return (
-  //   <div className="main-book relative overflow-hidden flex flex-col">
-  //     <div className="bcards">
-  //       <div className="bkcard h-auto">
-  //         <h2>BOOKS UPLOADED BY ADMIN</h2>
-  //         <h3>{adminCount}</h3>
-  //       </div>
-  //       <div className="bkcard">
-  //         <h2>BOOKS UPLOADED BY USER</h2>
-  //         <h3>{userCount}</h3>
-  //       </div>
-  //     </div>
-  //     <h1 className="tbhead text-3xl -mb-10 "> Book Table</h1>
-  //     <div className=" scrollDi h-full">
-  //       <div className="table ">
-  //         <table>
-  //           <thead>
-  //             <tr>
-  //               <th>Title</th>
-  //               <th>Author</th>
-  //               <th>Genre</th>
-  //               <th>By</th>
-  //               <th>Book Cover</th>
-  //               <th>Book Description</th>
-  //               <th>Book Content</th>
-  //               <th>Manage</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {bookdata == undefined && <span>undefined</span>}
-  //             {bookdata != undefined &&
-  //               //  do both the line above will work
-  //               bookdata.map((i) => (
-  //                 <tr key={i._id}>
-  //                   {/* <BooksCard i={i} /> */}
-  //                   {/* what i is doing?? */}
-  //                   <td>{i.bkname}</td>
-  //                   <td>{i.authname}</td>
-  //                   <td>{i.bkgenre}</td>
-  //                   <td>{i.role}</td>
-  //                   <td className="tbimg">{i.bkimage}</td>
-  //                   <td className="tbdesp">{i.desp}</td>
-  //                   <td className="tbcon">{i.bkcon}</td>
-  //                   <td>
-  //                     <div className="absolute w-full h-auto p-8 flex flex-col justify-center gap-5  text-white">
-  //                       <FaRegEdit
-  //                         size={30}
-  //                         onClick={() => {
-  //                           setBkDetail(i);
-  //                           setEditOpen(!editOpen);
-  //                         }}
-  //                         className="active:scale-90 cursor-pointer ease-in-out duration-200"
-  //                       />
-  //                       <AiTwotoneDelete
-  //                         size={30}
-  //                         onClick={() => {
-  //                           // setBkDetail(i);
-  //                           delbook(i);
-  //                         }}
-  //                         className="active:scale-90 cursor-pointer ease-in-out duration-200"
-  //                       />
-  //                     </div>
-  //                   </td>
-  //                 </tr>
-  //               ))}
-  //           </tbody>
-  //         </table>
-  //       </div>
-  //     </div>
-  //     <div
-  //       className={`${
-  //         editOpen ? "opacity-100" : "opacity-0 hidden"
-  //       } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
-  //     >
-  //       <BookDetail
-  //         setEditOpen={setEditOpen}
-  //         bookDetail={bkDetail}
-  //         fetchbooks={fetchbooks}
-  //       />
-  //     </div>
-  //   </div>
-  // );
   return (
     <div className="main-book relative overflow-hidden flex flex-col">
       <div className="bcards h-auto">
@@ -208,9 +122,8 @@ const Books = () => {
         </div>
       </div>
       <div
-        className={`${
-          editOpen ? "opacity-100" : "opacity-0 hidden"
-        } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+        className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
+          } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
       >
         <BookDetail
           setEditOpen={setEditOpen}
@@ -218,7 +131,6 @@ const Books = () => {
           fetchbooks={fetchbooks}
         />
       </div>
-          
     </div>
   );
 };
@@ -242,7 +154,7 @@ export const BookDetail = (props) => {
     "Horror",
     "Humor",
     "Mythology",
-    " Nonfiction",
+    "Nonfiction",
     "Poetry",
     "Paranormal",
     "Romance",

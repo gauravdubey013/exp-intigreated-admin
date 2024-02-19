@@ -5,6 +5,8 @@ import LogoDark from "../../assets/website/logoDark.png";
 import DarkMode from "./DarkMode";
 import { FaCaretDown } from "react-icons/fa";
 import { IoBookSharp } from "react-icons/io5";
+import { FaRegUser } from "react-icons/fa6";
+import Dropdown from "react-bootstrap/Dropdown";
 
 const Menu = [
   {
@@ -16,11 +18,6 @@ const Menu = [
     id: 2,
     name: "Best Seller",
     link: "/#services",
-  },
-  {
-    id: 3,
-    name: "Profile",
-    link: "/profile",
   },
 ];
 
@@ -42,7 +39,7 @@ const DropdownLinks = [
 const Navbar = ({ handleOrderPopup }) => {
   const uData = JSON.parse(window.localStorage.getItem("user"));
   const user_role = uData?.role;
-  // console.log(user_role);
+  // console.log(uData?.username);
   return (
     <>
       <div className="shadow-md bg-white dark:bg-black dark:text-white duration-200">
@@ -120,18 +117,6 @@ const Navbar = ({ handleOrderPopup }) => {
                   >
                     Books
                   </a>
-
-                  <a
-                    href={"/login"}
-                    onClick={() => {
-                      window.localStorage.setItem("user", null);
-                      // window.localStorage.setItem("loggedIn", false)
-                      // window.localStorage.setItem("user-role", "")
-                    }}
-                    className="bg-gradient-to-r cursor-pointer from-primary to-secondary hover:scale-105 duration-200 text-white py-1 px-4 rounded-full flex items-center gap-3"
-                  >
-                    Logout
-                  </a>
                 </>
               )}
               {uData == null && (
@@ -149,6 +134,30 @@ const Navbar = ({ handleOrderPopup }) => {
                 >
                   Admin
                 </a>
+              )}
+              {uData && uData?.email && (
+                <div className="right">
+                  <Dropdown>
+                    <Dropdown.Toggle variant="" id="dropdown-basic">
+                      <FaRegUser size={25} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="absolute flex flex-col gap-2 p-3 h-20 border rounded-lg bg-[#dbf44c97]">
+                      <Dropdown.Item
+                        href={`/user/${uData?.username}/accountsettings`}
+                      >
+                        Profile
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        href="/login"
+                        onClick={() => {
+                          window.localStorage.setItem("user", null);
+                        }}
+                      >
+                        Logout
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
               )}
             </div>
           </div>

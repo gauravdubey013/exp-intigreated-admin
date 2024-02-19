@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-
 const Adddbook = () => {
   const navigate = useNavigate();
   const [bkCon, setBkCon] = useState(null);
@@ -23,7 +22,7 @@ const Adddbook = () => {
     "Horror",
     "Humor",
     "Mythology",
-    " Nonfiction",
+    "Nonfiction",
     "Poetry",
     "Paranormal",
     "Romance",

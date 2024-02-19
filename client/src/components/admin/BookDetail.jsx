@@ -3,9 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { FaRegEdit } from "react-icons/fa";
+import { GiBlackBook } from "react-icons/gi";
 
 const BookDetail = () => {
   const { bkname } = useParams();
+
+  const uData = JSON.parse(window.localStorage.getItem("user"));
   // console.log(decodeURIComponent(bkname));
 
   const [bookDetail, setBookDetail] = useState();
@@ -29,11 +32,7 @@ const BookDetail = () => {
         .then((res) => {
           const bkDetail = res.data.data;
           // console.log(res.data.message, bkDetail);
-          setBookDetail(
-            bkDetail.filter(
-              (book) => book.bkname === decodeURIComponent(bkname)
-            )
-          );
+          setBookDetail(bkDetail.filter((book) => book.bkName === decodeURIComponent(bkname))[0]);
         });
     } catch (error) {
       console.log(error);
@@ -44,7 +43,7 @@ const BookDetail = () => {
       fetchbooks();
     }
   });
-  // console.log(bookDetail && bookDetail[0]);
+  // console.log(bookDetail);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,13 +53,12 @@ const BookDetail = () => {
     });
   };
 
-  // console.log(book);
   const editbook = (e) => {
     e.preventDefault();
 
     const data = new FormData();
-    data.set("bkname", bookDetail[0]?.bkname);
-    data.set("authname", bookDetail[0]?.authname);
+    data.set("bkname", bookDetail?.bkname);
+    data.set("authname", bookDetail?.authname);
     data.set("bkImg", bkImg);
     data.set("bkgenre", book.bkgenre);
     data.set("desp", book.desp);
@@ -82,7 +80,7 @@ const BookDetail = () => {
   };
   const delbook = () => {
     axios
-      .post("http://localhost:3001/delbook", { bkname: bookDetail[0]?.bkname })
+      .post("http://localhost:3001/delbook", { bkname: bookDetail?.bkname })
       .then((res) => {
         alert(res.data.message);
         if (res.data.status == "del") {
@@ -99,22 +97,34 @@ const BookDetail = () => {
           </div>
         ) : (
           <>
-            <div className="absolute w-full h-auto p-8 flex justify-end gap-5 text-white">
-              <FaRegEdit
-                size={30}
-                onClick={() => setEditOpen(!editOpen)}
-                className="active:scale-90 cursor-pointer ease-in-out duration-200"
-              />
-              <AiTwotoneDelete
-                size={30}
-                onClick={delbook}
-                className="active:scale-90 cursor-pointer ease-in-out duration-200"
-              />
-            </div>
+            {
+              uData.username == bookDetail?.authName && (
+                <>
+                  <div className="absolute w-full h-auto p-8 flex justify-end gap-5 text-white">
+                    <Link to={`http://localhost:5173/test-chp/${bookDetail?.bkName}`} className="flex">
+                      <GiBlackBook
+                        size={30}
+                        // onClick={() => setEditOpen(!editOpen)}
+                        className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                      /> <span className="text-2xl">+</span>
+                    </Link>
+                    <FaRegEdit
+                      size={30}
+                      onClick={() => setEditOpen(!editOpen)}
+                      className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                    />
+                    <AiTwotoneDelete
+                      size={30}
+                      onClick={delbook}
+                      className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                    />
+                  </div>
+                </>
+              )
+            }
             <div
-              className={`${
-                editOpen ? "opacity-100" : "opacity-0 hidden"
-              } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+              className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
+                } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
             >
               <form className="w-[50%] h-[40rem] shadow-2xl rounded-xl flex flex-col gap-2 items-center justify-center border">
                 <span className="text-4xl text-black mb-2">
@@ -124,13 +134,13 @@ const BookDetail = () => {
                   type="text"
                   className="w-[80%] h-[3rem] border shadow-xl rounded-lg  placeholder:text-black text-black p-2"
                   disabled
-                  placeholder={bookDetail[0]?.bkname ?? "book-name"}
+                  placeholder={bookDetail?.bkName ?? "book-name"}
                 />
                 <input
                   type="text"
                   className="w-[80%] h-[3rem] border shadow-xl rounded-lg  placeholder:text-black text-black p-2"
                   disabled
-                  placeholder={bookDetail[0]?.authname ?? "book-author"}
+                  placeholder={bookDetail?.authName ?? "book-author"}
                 />
                 <input
                   type="text"
@@ -138,15 +148,15 @@ const BookDetail = () => {
                   value={book.bkgenre}
                   onChange={handleChange}
                   className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
-                  placeholder={bookDetail[0]?.bkgenre ?? "book-genre"}
+                  placeholder={bookDetail?.bkGenre ?? "book-genre"}
                 />
                 <textarea
                   rows={5}
                   name="desp"
-                  value={book.desp}
+                  value={book.bkDesp}
                   onChange={handleChange}
                   className="w-[80%] h-auto border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
-                  placeholder={bookDetail[0]?.desp ?? "book-description"}
+                  placeholder={bookDetail?.bkDesp ?? "book-description"}
                 ></textarea>
                 <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
                   <span className="w-[35%]">Update Cover Image : </span>
@@ -157,7 +167,7 @@ const BookDetail = () => {
                     accept=".jpg, .jpeg, .png"
                     required
                     placeholder="Add your books pdf"
-                    onChange={(e) => setBkImg(e.target.files[0])}
+                    onChange={(e) => setBkImg(e.target.files)}
                     className="w-full h-full"
                   ></input>
                 </div>
@@ -170,7 +180,7 @@ const BookDetail = () => {
                     accept=".pdf"
                     required
                     placeholder="Add your books pdf"
-                    onChange={(e) => setBkCon(e.target.files[0])}
+                    onChange={(e) => setBkCon(e.target.files)}
                     className="w-full h-full"
                   ></input>
                 </div>
@@ -200,7 +210,7 @@ const BookDetail = () => {
                   <div className="relative">
                     <div className="w-44 h-44 bg-indigo-100 mx-auto shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center">
                       <img
-                        src={bookDetail[0]?.bkimage ?? "img"}
+                        src={bookDetail?.bkImagePath ?? "img"}
                         alt=""
                         className="w-auto rounded-lg"
                       />
@@ -214,7 +224,7 @@ const BookDetail = () => {
                       View Author Profile
                     </Link>
                     <Link
-                      to={bookDetail[0]?.bkcon ?? "book-content"}
+                      to={bookDetail?.bkcon ?? "book-content"}
                       target="_blank"
                       className="text-white flex items-center justify-center py-2 px-4 uppercase rounded bg-gray-700 dark:bg-orange-500 hover:bg-gray-800 dark:hover:bg-orange-600 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5 active:-translate-y-2"
                     >
@@ -224,18 +234,18 @@ const BookDetail = () => {
                 </div>
                 <div className="mt-20 text-center border-b pb-12 capitalize">
                   <h1 className="text-4xl font-semibold text-gray-700 dark:text-white">
-                    {bookDetail[0]?.bkname ?? "book-name"}
+                    {bookDetail?.bkName ?? "book-name"}
                   </h1>
                   <p className="mt-4 text-gray-500 dark:text-gray-200">
-                    {bookDetail[0]?.bkgenre ?? "book-genre"}
+                    {bookDetail?.bkGenre ?? "book-genre"}
                   </p>
                   <p className="mt-2 text-gray-500 dark:text-gray-300">
-                    Author : {bookDetail[0]?.authname ?? "book-author"}
+                    Author : {bookDetail?.authName ?? "book-author"}
                   </p>
                 </div>
                 <div className="mt-12 flex flex-col justify-center capitalize">
                   <p className="text-black text-center font-light lg:px-16 dark:text-white">
-                    {bookDetail[0]?.desp ?? "book-description"}
+                    {bookDetail?.bkDesp ?? "book-description"}
                   </p>
                   <button
                     onClick={() => setCommentOpen(!commentOpen)}
@@ -246,9 +256,8 @@ const BookDetail = () => {
                 </div>
               </div>
               <div
-                className={`${
-                  commentOpen ? "opacity-100" : "opacity-0 hidden"
-                } ease-in-out duration-200 mt-5 h-auto shadow-xl flex flex-col gap-1 p-4 border rounded-lg bg-white dark:bg-neutral-700 dark:text-white dark:bg-opacity-20 text-black`}
+                className={`${commentOpen ? "opacity-100" : "opacity-0 hidden"
+                  } ease-in-out duration-200 mt-5 h-auto shadow-xl flex flex-col gap-1 p-4 border rounded-lg bg-white dark:bg-neutral-700 dark:text-white dark:bg-opacity-20 text-black`}
               >
                 <div className="w-full h-auto flex gap-10">
                   <div className="pfp w-[10%] h-[10rem] rounded-full bg-black text-primary flex items-center justify-center">
@@ -274,7 +283,7 @@ const BookDetail = () => {
             </div>
           </>
         )}
-      </div>
+      </div >
     </>
   );
 };

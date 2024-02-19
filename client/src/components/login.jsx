@@ -11,10 +11,11 @@ import "../cStyles/register_login.css";
 const Login = () => {
   // const navigate = useNavigate();
 
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-  });
+  const [user, setUser] = useState(
+    {
+      email: "",
+      password: "",
+    });
 
   //validation for email
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -45,7 +46,7 @@ const Login = () => {
       setPassErr(false);
     }
     // setUser({ password: pswd });
-    setUser((prevUser) => ({ ...prevUser, password: pswd }));
+    setUser((prevPswd) => ({ ...prevPswd, password: pswd }));
   };
 
   const login = (e) => {
@@ -62,9 +63,8 @@ const Login = () => {
           window.localStorage.setItem("user", JSON.stringify(res.data.user));
           window.localStorage.setItem("token", res.data.token);
           alert(res.data.message);
-          return window.location.href = "/"
-        }
-        else {
+          return (window.location.href = "/");
+        } else {
           alert(res.data.message);
         }
       });
@@ -74,7 +74,7 @@ const Login = () => {
   const uData = JSON.parse(window.localStorage.getItem("user"));
 
   if (uData && uData?.role) {
-    return window.location.href = "/";
+    return (window.location.href = "/");
   }
   return (
     <>
@@ -161,3 +161,8 @@ const Login = () => {
 };
 
 export default Login;
+
+
+<span>
+  lorem100
+</span>

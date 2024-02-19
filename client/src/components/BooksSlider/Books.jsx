@@ -70,12 +70,12 @@ export const BooksCard = (props) => {
       <div className=" div  w-auto h-auto flex flex-col gap-5 shadow-xl text-black scale-90 hover:scale-95 hover:bg-orange-500 ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
         {/* <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden"> */}
         <Link
-          to={`/admin/books/book-detail/${i?.bkname ?? "name"}`}
+          to={`/admin/books/book-detail/${i?.bkName ?? "name"}`}
           target="_parent"
-          // className="h-full flex items-center"
+        // className="h-full flex items-center"
         >
           <img
-            src={i?.bkimage ?? "img"}
+            src={i?.bkImagePath ?? "img"}
             alt=""
             className="h-[220px] w-[150px] object-cover rounded-md"
           />
@@ -83,9 +83,9 @@ export const BooksCard = (props) => {
         {/* </div> */}
         <div>
           <h3 className="font-semibold dark:text-white">
-            {i.bkname ?? "name"}
+            {i.bkName ?? "name"}
           </h3>
-          <p className="text-sm text-stone-700 ">{i.authname}</p>
+          <p className="text-sm text-stone-700 ">{i.authName}</p>
         </div>
       </div>
     </>

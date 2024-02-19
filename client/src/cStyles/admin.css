@@ -520,9 +520,9 @@ a {
   display: flex;
   align-items: center;
   padding: 0.8rem;
-  background: hsl(17, 98%, 57%);
+  background: hsl(17, 98%, 57%) !important;
   border: none;
-  color: white;
+  color: white !important;
   align-items: center;
   margin: auto;
   justify-content: center;

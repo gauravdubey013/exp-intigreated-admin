@@ -5,6 +5,8 @@ import axios from 'axios';
 const TestAddBook = () => {
     const navigate = useNavigate();
 
+    const uData = JSON.parse(window.localStorage.getItem("user"));
+
     const [bkImage, setBkImage] = useState(null);
     const [book, setBook] = useState({
         bkname: "",
@@ -43,7 +45,7 @@ const TestAddBook = () => {
         const data = new FormData();
         data.set("role", book.role);
         data.set("bkName", book.bkname);
-        data.set("authName", book.authname);
+        data.set("authName", uData.username);
         data.set("bkGenre", book.bkgenre);
         data.set("bkDesp", book.desp);
         data.set("bkImage", bkImage);
@@ -79,19 +81,6 @@ const TestAddBook = () => {
                                             value={book.bkname}
                                             required
                                             placeholder="Enter book name"
-                                            onChange={handleChange}
-                                        ></input>
-                                    </div>
-                                </div>
-                                <div className="inputbk">
-                                    <label htmlFor="authname">Author Name</label>
-                                    <div className="input-flexbk">
-                                        <input
-                                            type="text"
-                                            name="authname"
-                                            value={book.authname}
-                                            required
-                                            placeholder="Author name"
                                             onChange={handleChange}
                                         ></input>
                                     </div>
