@@ -121,11 +121,11 @@ const App = () => {
             />
           )}
           <Route
-            path="/admin/books/book-detail/:bkname"
+            path="/books/book-detail/:bkname"
             element={<BookDetail />}
           />
           <Route
-            path="/admin/books/audiobook-detail/:audioBkName"
+            path="/books/audiobook-detail/:audioBkName"
             element={<AudiobookDetail />}
           />
           {uData == null && <Route exact path="/" element={<Login />} />}
@@ -145,6 +145,7 @@ const App = () => {
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/test-add-book" element={<TestAddBook />} />
           <Route path="/test-chp/:bkName" element={<AddBookChapters />} />
+          {/* <Route path="/bookview" element={<BookView />} /> */}
         </Routes>
       </Router>
       <Footer />
@@ -168,6 +169,6 @@ export const admin_href =
   window.location.href == "http://localhost:5173/admin/adduser" ||
   window.location.href == "http://localhost:5173/admin/addpreuser" ||
   window.location.href ==
-    "http://localhost:5173/admin/books/book-detail/:bkname" ||
+  "http://localhost:5173/admin/books/book-detail/:bkname" ||
   window.location.href ==
-    "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";
+  "http://localhost:5173/admin/books/audiobook-detail/:audioBkName";

@@ -1,11 +1,13 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
-const Adddbook = () => {
+
+const TestAddBook = () => {
   const navigate = useNavigate();
-  const [bkCon, setBkCon] = useState(null);
-  const [bkImg, setBkImg] = useState(null);
+
+  const uData = JSON.parse(window.localStorage.getItem("user"));
+
+  const [bkImage, setBkImage] = useState(null);
   const [book, setBook] = useState({
     bkname: "",
     role: "admin",
@@ -13,7 +15,6 @@ const Adddbook = () => {
     bkgenre: "",
     desp: "",
   });
-  //dropdown list
   const options = [
     "Adventure",
     "Children's literature",
@@ -22,17 +23,13 @@ const Adddbook = () => {
     "Horror",
     "Humor",
     "Mythology",
-    "Nonfiction",
+    " Nonfiction",
     "Poetry",
     "Paranormal",
     "Romance",
     "Self Help",
     "Thriller",
   ];
-  const [selectedOption, setSelectedOption] = useState("");
-  const handleSelectChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,115 +38,93 @@ const Adddbook = () => {
       [name]: value,
     });
   };
-
-  // console.log(book);
-
+  console.log(book, bkImage);
   const addbook = (e) => {
     e.preventDefault();
 
     const data = new FormData();
+    data.set("role", book.role);
+    data.set("bkName", book.bkname);
+    data.set("authName", uData.username);
+    data.set("bkGenre", book.bkgenre);
+    data.set("bkDesp", book.desp);
+    data.set("bkImage", bkImage);
 
-    if (
-      book.bkname &&
-      book.authname &&
-      book.role &&
-      // bkImg &&
-      // book.bkgenre &&
-      book.desp
-      // bkCon
-    ) {
-      data.set("bkname", book.bkname);
-      data.set("role", book.role);
-      data.set("authname", book.authname);
-      data.set("bkImg", bkImg);
-      data.set("bkgenre", selectedOption);
-      data.set("desp", book.desp);
-      data.set("bkCon", bkCon);
-
-      axios.post("http://localhost:3001/addbook", data).then((res) => {
-        alert(res.data.message);
-        navigate("/admin/books");
-      });
-    } else {
-      alert("Invlid input");
-    }
+    axios.post("http://localhost:3001/test-addbooks", data).then((res) => {
+      alert(res.data.message);
+      if (res.data.status == "ok") navigate(`/test-chp/${bookDetail?.bkName}`);
+    });
   };
-
   return (
-    <main className="main-bk">
-      <div className="inbk">
-        <div className="headbk">
-          <img src="/assests/logoExplore.png" alt="Logo Image" />
-          <span className="line">
-            <h2>Upload a Book</h2>
-          </span>
-        </div>
-        <form
-          encType="multipart/form-data"
-          onSubmit={addbook}
-          className="input-form"
-        >
-          <div className="outbk">
-            <div className="innerbk">
-              <div className="inputbk">
-                <label htmlFor="bkname">Book Title</label>
-                <div className="input-flexbk">
-                  <input
-                    type="text"
-                    name="bkname"
-                    value={book.bkname}
-                    required
-                    placeholder="Enter book name"
-                    onChange={handleChange}
-                  ></input>
+    <>
+      <main className="main-bk">
+        <div className="inbk">
+          <div className="headbk">
+            <img src="/assests/logoExplore.png" alt="Logo Image" />
+            <span className="line">
+              <h2>Upload a Book</h2>
+            </span>
+          </div>
+          <form
+            encType="multipart/form-data"
+            onSubmit={addbook}
+            className="input-form"
+          >
+            <div className="outbk">
+              <div className="innerbk">
+                <div className="inputbk">
+                  <label htmlFor="bkname">Book Title</label>
+                  <div className="input-flexbk">
+                    <input
+                      type="text"
+                      name="bkname"
+                      value={book.bkname}
+                      required
+                      placeholder="Enter book name"
+                      onChange={handleChange}
+                    ></input>
+                  </div>
                 </div>
               </div>
-              <div className="inputbk">
-                <label htmlFor="authname">Author Name</label>
-                <div className="input-flexbk">
-                  <input
-                    type="text"
-                    name="authname"
-                    value={book.authname}
-                    required
-                    placeholder="Author name"
-                    onChange={handleChange}
-                  ></input>
+              <div className="innerbk">
+                <div className="inputbk">
+                  <label htmlFor="bkimage">Book Cover Image</label>
+                  <div className="input-flexbk">
+                    <input
+                      type="file"
+                      name="bkImage"
+                      // value={bkImg}
+                      // required
+                      accept=".jpg, .jpeg, .png"
+                      placeholder="Book Image Cover"
+                      onChange={(e) => setBkImage(e.target.files[0])}
+                    ></input>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="innerbk">
-              <div className="inputbk">
-                <label htmlFor="bkimage">Book Cover Image</label>
-                <div className="input-flexbk">
-                  <input
-                    type="file"
-                    name="bkImg"
-                    // value={bkImg}
-                    required
-                    accept=".jpg, .jpeg, .png"
-                    placeholder="Book Image Cover"
-                    onChange={(e) => setBkImg(e.target.files[0])}
-                  ></input>
+              <div className="innerbk">
+                <div className="inputbkg">
+                  <label htmlFor="bkgenre">Book Genre</label>
+                  <div className="dp-flexbk">
+                    <select
+                      id="dropdown"
+                      name="bkgenre"
+                      value={book.bkgenre}
+                      onChange={handleChange}
+                    >
+                      <option value="" disabled>
+                        Select an option
+                      </option>
+                      {options.map((option, index) => (
+                        <option key={index} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
-              <div className="inputbk">
-                <label htmlFor="bkgenre">Books Content</label>
-                <div className="input-flexbk">
-                  <input
-                    type="file"
-                    name="bkCon"
-                    // value={bkCon}
-                    accept=".pdf"
-                    required
-                    placeholder=" Add your books pdf"
-                    onChange={(e) => setBkCon(e.target.files[0])}
-                  ></input>
-                </div>
-              </div>
-            </div>
-            <div className="innerbk">
-              <div className="innbk">
+              <div className="innerbk">
                 <div className="inputbk">
                   <label htmlFor="bkimage">Book Description</label>
                   <div className="input-flexbk">
@@ -164,35 +139,16 @@ const Adddbook = () => {
                     ></textarea>
                   </div>
                 </div>
-                <div className="inputbk">
-                  <label htmlFor="bkgenre">Book Genre</label>
-                  <div className="dp-flexbk">
-                    <select
-                      id="dropdown"
-                      value={selectedOption}
-                      onChange={handleSelectChange}
-                    >
-                      <option value="" disabled>
-                        Select an option
-                      </option>
-                      {options.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
               </div>
             </div>
-          </div>
-          <button type="submit" className="adbtn">
-            <span>Add</span>
-          </button>
-        </form>
-      </div>
-    </main>
+            <button type="submit" className="adbtn">
+              <span>Add</span>
+            </button>
+          </form>
+        </div>
+      </main>
+    </>
   );
 };
 
-export default Adddbook;
+export default TestAddBook;

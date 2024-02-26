@@ -59,7 +59,7 @@ const AllBooks = () => {
 
   return (
     <div className="container">
-      <div className=" flex flex-row	">
+      <div className="flex flex-row">
         <form className="input-form">
           <div className="flex flex-row">
             <div className="input-flexbk">
@@ -107,7 +107,7 @@ export const BooksCard = (props) => {
     <>
       <div className=" div  w-auto h-auto flex flex-col gap-5 shadow-xl text-black scale-90 hover:scale-95 hover:bg-orange-500 ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
         <Link
-          to={`/admin/books/book-detail/${i?.bkname ?? "name"}`}
+          to={`/books/book-detail/${i?.bkname ?? "name"}`}
           target="_parent"
         >
           <img

@@ -70,7 +70,7 @@ export const BooksCard = (props) => {
       <div className=" div  w-auto h-auto flex flex-col gap-5 shadow-xl text-black scale-90 hover:scale-95 hover:bg-orange-500 ease-in-out duration-300 rounded-xl active:scale-90 overflow-hidden">
         {/* <div className="w-full h-[85%] bg-[#F8F8F8] overflow-hidden"> */}
         <Link
-          to={`/admin/books/book-detail/${i?.bkName ?? "name"}`}
+          to={`/books/book-detail/${i?.bkName ?? "name"}`}
           target="_parent"
         // className="h-full flex items-center"
         >

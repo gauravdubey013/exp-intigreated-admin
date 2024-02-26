@@ -4,10 +4,11 @@ import { Link, useParams } from "react-router-dom";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { FaRegEdit } from "react-icons/fa";
 import { GiBlackBook } from "react-icons/gi";
+import BookView from "../BookView";
 
 const BookDetail = () => {
-  const { bkname } = useParams();
-
+  const { bkname } = useParams(); // bkname???
+  // console.log(decodeURIComponent(bkname));
   const uData = JSON.parse(window.localStorage.getItem("user"));
   // console.log(decodeURIComponent(bkname));
 
@@ -16,13 +17,28 @@ const BookDetail = () => {
   const [editOpen, setEditOpen] = useState(false);
 
   const [book, setBook] = useState({
-    bkname: "",
-    authname: "",
-    bkgenre: "",
-    desp: "",
+    bkName: "",
+    authName: "",
+    bkGenre: "",
+    bkDesp: "",
   });
-  const [bkCon, setBkCon] = useState(null);
-  const [bkImg, setBkImg] = useState(null);
+  const options = [
+    "Adventure",
+    "Children's literature",
+    "Fiction",
+    "Historical Fiction",
+    "Horror",
+    "Humor",
+    "Mythology",
+    "Nonfiction",
+    "Poetry",
+    "Paranormal",
+    "Romance",
+    "Self Help",
+    "Thriller",
+  ];
+  // const [bkCon, setBkCon] = useState(null);
+  const [bkImagePath, setBkImagePath] = useState(null);
 
   const fetchbooks = async () => {
     const bookColl = "books";
@@ -32,7 +48,11 @@ const BookDetail = () => {
         .then((res) => {
           const bkDetail = res.data.data;
           // console.log(res.data.message, bkDetail);
-          setBookDetail(bkDetail.filter((book) => book.bkName === decodeURIComponent(bkname))[0]);
+          setBookDetail(
+            bkDetail.filter(
+              (book) => book.bkName === decodeURIComponent(bkname)
+            )[0]
+          );
         });
     } catch (error) {
       console.log(error);
@@ -43,7 +63,7 @@ const BookDetail = () => {
       fetchbooks();
     }
   });
-  // console.log(bookDetail);
+  // console.log(bookDetail?.chapters);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,22 +77,22 @@ const BookDetail = () => {
     e.preventDefault();
 
     const data = new FormData();
-    data.set("bkname", bookDetail?.bkname);
-    data.set("authname", bookDetail?.authname);
-    data.set("bkImg", bkImg);
-    data.set("bkgenre", book.bkgenre);
-    data.set("desp", book.desp);
-    data.set("bkCon", bkCon);
+    data.set("bkName", bookDetail?.bkName);
+    data.set("authName", bookDetail?.authName);
+    data.set("bkImg", bkImagePath);
+    data.set("bkGenre", book.bkGenre);
+    data.set("bkDesp", book.bkDesp);
+    // data.set("bkCon", bkCon);
 
     axios.post("http://localhost:3001/edit-book", data).then((res) => {
       alert(res.data.message);
       if (res.data.status == "ok") {
         fetchbooks();
         setBook({
-          bkname: "",
-          authname: "",
-          bkgenre: "",
-          desp: "",
+          bkName: "",
+          authName: "",
+          bkGenre: "",
+          bkDesp: "",
         });
         setEditOpen(!editOpen);
       }
@@ -80,7 +100,7 @@ const BookDetail = () => {
   };
   const delbook = () => {
     axios
-      .post("http://localhost:3001/delbook", { bkname: bookDetail?.bkname })
+      .post("http://localhost:3001/delbook", { bkName: bookDetail?.bkName })
       .then((res) => {
         alert(res.data.message);
         if (res.data.status == "del") {
@@ -97,36 +117,44 @@ const BookDetail = () => {
           </div>
         ) : (
           <>
-            {
-              uData.username == bookDetail?.authName && (
-                <>
-                  <div className="absolute w-full h-auto p-8 flex justify-end gap-5 text-white">
-                    <Link to={`http://localhost:5173/test-chp/${bookDetail?.bkName}`} className="flex">
-                      <GiBlackBook
-                        size={30}
-                        // onClick={() => setEditOpen(!editOpen)}
-                        className="active:scale-90 cursor-pointer ease-in-out duration-200"
-                      /> <span className="text-2xl">+</span>
-                    </Link>
-                    <FaRegEdit
+            {uData.username == bookDetail?.authName && (
+              <>
+                <div className="absolute w-full h-auto p-8 flex justify-end gap-5 text-white">
+                  <Link
+                    to={`http://localhost:5173/test-chp/${bookDetail?.bkName}`}
+                    className="flex"
+                  >
+                    <GiBlackBook
                       size={30}
-                      onClick={() => setEditOpen(!editOpen)}
+                      // onClick={() => setEditOpen(!editOpen)}
                       className="active:scale-90 cursor-pointer ease-in-out duration-200"
-                    />
-                    <AiTwotoneDelete
-                      size={30}
-                      onClick={delbook}
-                      className="active:scale-90 cursor-pointer ease-in-out duration-200"
-                    />
-                  </div>
-                </>
-              )
-            }
+                    />{" "}
+                    <span className="text-2xl">+</span>
+                  </Link>
+                  <FaRegEdit
+                    size={30}
+                    onClick={() => setEditOpen(!editOpen)}
+                    className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                  />
+                  <AiTwotoneDelete
+                    size={30}
+                    onClick={delbook}
+                    className="active:scale-90 cursor-pointer ease-in-out duration-200"
+                  />
+                </div>
+              </>
+            )}
             <div
               className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
                 } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
             >
-              <form className="w-[50%] h-[40rem] shadow-2xl rounded-xl flex flex-col gap-2 items-center justify-center border">
+              <form className=" relative w-[50%] h-[40rem] shadow-2xl rounded-xl flex flex-col gap-2 items-center justify-center border">
+                <div
+                  onClick={() => setEditOpen(false)}
+                  className="absolute cursor-pointer w-auto h-auto text-2xl right-2 top-2 active:scale-90 ease-in-out duration-200"
+                >
+                  X
+                </div>
                 <span className="text-4xl text-black mb-2">
                   Edit book details
                 </span>
@@ -142,17 +170,25 @@ const BookDetail = () => {
                   disabled
                   placeholder={bookDetail?.authName ?? "book-author"}
                 />
-                <input
-                  type="text"
-                  name="bkgenre"
-                  value={book.bkgenre}
+                <select
+                  id="dropdown"
+                  name="bkGenre"
+                  value={book.bkGenre}
                   onChange={handleChange}
                   className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
-                  placeholder={bookDetail?.bkGenre ?? "book-genre"}
-                />
+                >
+                  <option value="" disabled>
+                    {bookDetail?.bkGenre ?? "book-genre"}
+                  </option>
+                  {options.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
                 <textarea
                   rows={5}
-                  name="desp"
+                  name="bkDesp"
                   value={book.bkDesp}
                   onChange={handleChange}
                   className="w-[80%] h-auto border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
@@ -162,28 +198,28 @@ const BookDetail = () => {
                   <span className="w-[35%]">Update Cover Image : </span>
                   <input
                     type="file"
-                    name="bkCon"
+                    name="bkImg"
                     // value={bkCon}
                     accept=".jpg, .jpeg, .png"
                     required
-                    placeholder="Add your books pdf"
-                    onChange={(e) => setBkImg(e.target.files)}
+                    placeholder={bookDetail?.bkImagePath ?? "bookcover"}
+                    onChange={(e) => setBkImagePath(e.target.files)}
                     className="w-full h-full"
                   ></input>
                 </div>
-                <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
-                  <span className="w-[35%]">Update Content : </span>
-                  <input
-                    type="file"
-                    name="bkCon"
-                    // value={bkCon}
-                    accept=".pdf"
-                    required
-                    placeholder="Add your books pdf"
-                    onChange={(e) => setBkCon(e.target.files)}
-                    className="w-full h-full"
-                  ></input>
-                </div>
+                {/* <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
+                    <span className="w-[35%]">Update Content : </span>
+                    <input
+                      type="file"
+                      name="bkCon"
+                      // value={bkCon}
+                      accept=".pdf"
+                      required
+                      placeholder="Add your books pdf"
+                      onChange={(e) => setBkCon(e.target.files)}
+                      className="w-full h-full"
+                    ></input>
+                  </div> */}
                 <button
                   type="submit"
                   onClick={editbook}
@@ -247,6 +283,10 @@ const BookDetail = () => {
                   <p className="text-black text-center font-light lg:px-16 dark:text-white">
                     {bookDetail?.bkDesp ?? "book-description"}
                   </p>
+                  <div className="mt-10 border-b pb-12">
+                    <BookView chapters={bookDetail?.chapters} />
+                  </div>
+
                   <button
                     onClick={() => setCommentOpen(!commentOpen)}
                     className="text-indigo-500 py-2 px-4 font-medium mt-4 dark:text-cyan-400"
@@ -283,7 +323,7 @@ const BookDetail = () => {
             </div>
           </>
         )}
-      </div >
+      </div>
     </>
   );
 };

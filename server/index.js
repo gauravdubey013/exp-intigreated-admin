@@ -330,59 +330,57 @@ app.post(
   "/edit-book",
   upload.fields([
     { name: "bkImg", maxCount: 1 },
-    { name: "bkCon", maxCount: 1 },
+    // { name: "bkCon", maxCount: 1 },
   ]),
   async (req, res) => {
     try {
-      const { bkname, authname, bkgenre, desp } = req.body;
+      const { bkName, authName, bkGenre, bkDesp } = req.body;
 
       const bkImg = req.files["bkImg"] ? req.files["bkImg"][0] : null;
-      const bkCon = req.files["bkCon"] ? req.files["bkCon"][0] : null;
+      // const bkCon = req.files["bkCon"] ? req.files["bkCon"][0] : null;
 
-      const bookInfo = await Book.findOne({ bkname: bkname });
+      const bookInfo = await TBook.findOne({ bkName });
 
       if (!bookInfo) {
         return res.send({ message: "book doesn't exists!" });
       }
 
-      if (authname) bookInfo.authname = authname;
-      if (bkgenre) bookInfo.bkgenre = bkgenre;
-      if (desp) bookInfo.desp = desp;
-      if (desp) bookInfo.desp = desp;
-      // if (bkname) bookInfo.bkname = bkname;
+      if (authName) bookInfo.authName = authName;
+      if (bkGenre) bookInfo.bkGenre = bkGenre;
+      if (bkDesp) bookInfo.bkDesp = bkDesp;
 
       let bkImgPath = "";
-      let bkConPath = "";
+      // let bkConPath = "";
 
-      if (bkImg) {
+      if (bkImg && bkImg.originalname) {
         const bufferBkImg = bkImg.buffer;
         const bkImgPathPublic = `../client/public/users/bookCover/${
-          bkname + "_" + bkImg.originalname
+          bkName + "_" + bkImg.originalname
         }`;
         await writeFile(bkImgPathPublic, bufferBkImg);
 
-        bkImgPath = `/users/bookCover/${bkname + "_" + bkImg.originalname}`;
+        bkImgPath = `/users/bookCover/${bkName + "_" + bkImg.originalname}`;
         bookInfo.bkimage = bkImgPath;
       }
 
-      if (bkCon) {
-        const bufferBkCon = bkCon.buffer;
-        const bkConPathPublic = `../client/public/users/bookCon/${
-          bkname + "_" + bkCon.originalname
-        }`;
-        await writeFile(bkConPathPublic, bufferBkCon);
+      // if (bkCon) {
+      //   const bufferBkCon = bkCon.buffer;
+      //   const bkConPathPublic = `../client/public/users/bookCon/${
+      //     bkName + "_" + bkCon.originalname
+      //   }`;
+      //   await writeFile(bkConPathPublic, bufferBkCon);
 
-        bkConPath = `/users/bookCon/${bkname + "_" + bkCon.originalname}`;
-        bookInfo.bkcon = bkConPath;
-      }
+      //   bkConPath = `/users/bookCon/${bkName + "_" + bkCon.originalname}`;
+      //   bookInfo.bkcon = bkConPath;
+      // }
 
       await bookInfo.save();
       // const book = new Book({
-      //   bkname,
-      //   authname,
+      //   bkName,
+      //   authName,
       //   bkimage: bkImgPath,
-      //   bkgenre,
-      //   desp,
+      //   bkGenre,
+      //   bkDesp,
       //   bkcon: bkConPath,
       // });
       return res.send({ message: "Book edited Successfully!", status: "ok" });
@@ -395,27 +393,35 @@ app.post(
 
 const delBookSchema = new mongoose.Schema(
   {
-    bkname: {
+    bkName: {
       type: String,
       required: true,
     },
-    authname: {
+    authName: {
       type: String,
       required: true,
     },
-    bkimage: {
+    bkImagePath: {
       type: String,
       required: true,
     },
-    bkgenre: {
+    chapters: [
+      {
+        title: {
+          type: String,
+          required: false,
+        },
+        content: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
+    bkGenre: {
       type: String,
       required: true,
     },
-    desp: {
-      type: String,
-      required: true,
-    },
-    bkcon: {
+    bkDesp: {
       type: String,
       required: true,
     },
@@ -427,26 +433,26 @@ const DelBook = new mongoose.model("DelBook", delBookSchema);
 
 app.post("/delbook", async (req, res) => {
   try {
-    const { bkname } = req.body;
-    // console.log(bkname);
-    const bookExist = await Book.findOne({ bkname: bkname });
+    const { bkName } = req.body;
+    // console.log(bkName);
+    const bookExist = await Book.findOne({ bkName: bkName });
 
     if (!bookExist) {
       return res.send({ message: "book doesn't exists!" });
     }
 
     const delbook = new DelBook({
-      bkname: bookExist.bkname,
-      authname: bookExist.authname,
-      bkimage: bookExist.bkimage,
-      bkgenre: bookExist.bkgenre,
-      desp: bookExist.desp,
-      bkcon: bookExist.bkcon,
+      bkName: bookExist.bkName,
+      authName: bookExist.authName,
+      bkImagePath: bookExist.bkImagePath,
+      bkGenre: bookExist.bkGenre,
+      bkDesp: bookExist.bkDesp,
+      chapters: bookExist.chapters,
     });
 
     await delbook.save();
 
-    await Book.deleteOne({ bkname });
+    await Book.deleteOne({ bkName });
 
     return res.send({ message: "book deleted successfully !", status: "del" });
   } catch (error) {

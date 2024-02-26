@@ -40,9 +40,9 @@ const Books = () => {
   const userCount = bkByUser.length;
 
   const delbook = (bk) => {
-    console.log(bk?.bkname);
+    console.log(bk?.bkName);
     axios
-      .post("http://localhost:3001/delbook", { bkname: bk?.bkname })
+      .post("http://localhost:3001/delbook", { bkName: bk?.bkName })
       .then((res) => {
         alert(res.data.message);
         if (res.data.status == "del") {
@@ -76,7 +76,7 @@ const Books = () => {
                 <th>By</th>
                 <th>Book Cover</th>
                 <th>Book Description</th>
-                <th>Book Content</th>
+                {/* <th>Book Content</th> */}
                 <th>Manage</th>
               </tr>
             </thead>
@@ -88,13 +88,13 @@ const Books = () => {
                   <tr key={i._id}>
                     {/* <BooksCard i={i} /> */}
                     {/* what i is doing?? */}
-                    <td>{i.bkname}</td>
-                    <td>{i.authname}</td>
-                    <td>{i.bkgenre}</td>
+                    <td>{i.bkName}</td>
+                    <td>{i.authName}</td>
+                    <td>{i.bkGenre}</td>
                     <td>{i.role}</td>
-                    <td className="tbimg">{i.bkimage}</td>
-                    <td className="tbdesp">{i.desp}</td>
-                    <td className="tbcon">{i.bkcon}</td>
+                    <td className="tbimg">{i.bkImagePath}</td>
+                    <td className="tbdesp">{i.bkDesp}</td>
+                    {/* <td className="tbcon">{i.bkcon}</td> */}
                     <td>
                       <div className=" w-full h-auto p-8 flex flex-col justify-center gap-5 text-white">
                         <FaRegEdit
@@ -122,8 +122,9 @@ const Books = () => {
         </div>
       </div>
       <div
-        className={`${editOpen ? "opacity-100" : "opacity-0 hidden"
-          } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
+        className={`${
+          editOpen ? "opacity-100" : "opacity-0 hidden"
+        } absolute mt-20 w-full h-full backdrop-blur-sm flex justify-center z-50`}
       >
         <BookDetail
           setEditOpen={setEditOpen}
@@ -140,10 +141,10 @@ export default Books;
 export const BookDetail = (props) => {
   const { setEditOpen, bookDetail, fetchbooks } = props;
   const [book, setBook] = useState({
-    bkname: "",
-    authname: "",
-    bkgenre: "",
-    desp: "",
+    bkName: "",
+    authName: "",
+    bkGenre: "",
+    bkDesp: "",
   });
   //dropdown list
   const options = [
@@ -166,7 +167,7 @@ export const BookDetail = (props) => {
     setSelectedOption(event.target.value);
   };
   const [bkCon, setBkCon] = useState(null);
-  const [bkImg, setBkImg] = useState(null);
+  const [bkImagePath, setBkImagePath] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -179,11 +180,11 @@ export const BookDetail = (props) => {
     e.preventDefault();
 
     const data = new FormData();
-    data.set("bkname", bookDetail?.bkname);
-    data.set("authname", bookDetail?.authname);
-    data.set("bkImg", bkImg);
-    data.set("bkgenre", selectedOption);
-    data.set("desp", book.desp);
+    data.set("bkName", bookDetail?.bkName);
+    data.set("authName", bookDetail?.authName);
+    data.set("bkImagePath", bkImagePath);
+    data.set("bkGenre", selectedOption);
+    data.set("bkDesp", book.bkDesp);
     data.set("bkCon", bkCon);
 
     axios.post("http://localhost:3001/edit-book", data).then((res) => {
@@ -191,10 +192,10 @@ export const BookDetail = (props) => {
       if (res.data.status == "ok") {
         fetchbooks();
         setBook({
-          bkname: "",
-          authname: "",
-          bkgenre: "",
-          desp: "",
+          bkName: "",
+          authName: "",
+          bkGenre: "",
+          bkDesp: "",
         });
         setEditOpen(false);
       }
@@ -214,21 +215,21 @@ export const BookDetail = (props) => {
           type="text"
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg placeholder:text-black text-black p-2"
           disabled
-          placeholder={bookDetail?.bkname ?? "book-name"}
+          placeholder={bookDetail?.bkName ?? "book-name"}
         />
         <input
           type="text"
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg  placeholder:text-black text-black p-2"
           disabled
-          placeholder={bookDetail?.authname ?? "book-author"}
+          placeholder={bookDetail?.authName ?? "book-author"}
         />
         {/* <input
           type="text"
-          name="bkgenre"
-          value={book.bkgenre}
+          name="bkGenre"
+          value={book.bkGenre}
           onChange={handleChange}
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
-          placeholder={bookDetail?.bkgenre ?? "book-genre"}
+          placeholder={bookDetail?.bkGenre ?? "book-genre"}
         /> */}
 
         <select
@@ -238,7 +239,7 @@ export const BookDetail = (props) => {
           className="w-[80%] h-[3rem] border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
         >
           <option value="" disabled>
-            {bookDetail?.bkgenre ?? "book-genre"}
+            {bookDetail?.bkGenre ?? "book-genre"}
           </option>
           {options.map((option, index) => (
             <option key={index} value={option}>
@@ -249,11 +250,11 @@ export const BookDetail = (props) => {
 
         <textarea
           rows={5}
-          name="desp"
-          value={book.desp}
+          name="bkDesp"
+          value={book.bkDesp}
           onChange={handleChange}
           className="w-[80%] h-auto border shadow-xl rounded-lg bg-[#FAEBD7] placeholder:text-black text-black p-2 outline-none focus:scale-105"
-          placeholder={bookDetail?.desp ?? "book-description"}
+          placeholder={bookDetail?.bkDesp ?? "book-description"}
         ></textarea>
         <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
           <span className="w-[35%]">Update Cover Image : </span>
@@ -263,11 +264,11 @@ export const BookDetail = (props) => {
             accept=".jpg, .jpeg, .png"
             required
             placeholder="Add your books pdf"
-            onChange={(e) => setBkImg(e.target.files)}
+            onChange={(e) => setBkImagePath(e.target.files)}
             className="w-full h-full"
           ></input>
         </div>
-        <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
+        {/* <div className="w-[80%] h-[3rem] flex gap-2 border shadow-xl rounded-lg text-black p-2 bg-[#FAEBD7]">
           <span className="w-[35%]">Update Content : </span>
           <input
             type="file"
@@ -278,7 +279,7 @@ export const BookDetail = (props) => {
             onChange={(e) => setBkCon(e.target.files)}
             className="w-full h-full"
           ></input>
-        </div>
+        </div> */}
         <button
           type="submit"
           onClick={editbook}
